@@ -2,6 +2,9 @@ type Lead = {
     custody_address: string;
     username: string;
     fid: number;
+    verified_addresses: {
+        eth_addresses: string[];
+    };
 };
 
 type Channel = {

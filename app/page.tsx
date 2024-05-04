@@ -17,7 +17,7 @@ export default function Login() {
             colorScheme="purple"
             color="white"
             onClick={login}
-            leftIcon={<img className="h-4 w-4" src="./farcaster.svg" />}
+            leftIcon={<img className="h-4 w-4" src="/farcaster.svg" />}
         >
             Sign in with Farcaster
         </Button>

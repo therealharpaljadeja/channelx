@@ -3,6 +3,7 @@
 import { ChakraProvider } from "@chakra-ui/react";
 import { PrivyProvider } from "@privy-io/react-auth";
 import theme from "@/theme";
+import { UserDataProvider } from "@/context/UserDataContext";
 
 export function Providers({ children }: { children: React.ReactNode }) {
     return (
@@ -19,7 +20,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
                 // Create embedded wallets for users who don't have a wallet
             }}
         >
-            <ChakraProvider theme={theme}>{children}</ChakraProvider>{" "}
+            <ChakraProvider theme={theme}>
+                <UserDataProvider>{children}</UserDataProvider>
+            </ChakraProvider>{" "}
         </PrivyProvider>
     );
 }

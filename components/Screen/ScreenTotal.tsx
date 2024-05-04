@@ -13,7 +13,7 @@ export default function ScreenTotal({
     return (
         <div className="py-4">
             <div className="shadow-lg shadow-[#A78FD2] py-4 border-2 border-[#A78FD2] bg-[#8A63D2] text-white space-y-4 flex flex-col items-center justify-center">
-                <Heading size="sm">Your Est. Earnings</Heading>
+                <Heading size="sm">Est. Earnings</Heading>
                 <div className="flex items-end space-x-2">
                     <FlowingBalance
                         startingBalance={BigInt(startingBalance)}

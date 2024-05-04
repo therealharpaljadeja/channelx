@@ -5,8 +5,10 @@ import { usePathname } from "next/navigation";
 import { HiMiniPower } from "react-icons/hi2";
 
 export default function BottomBar() {
-    const { logout } = usePrivy();
     const pathname = usePathname();
+    const { authenticated } = usePrivy();
+
+    if (!authenticated) return null;
 
     return (
         <div className="border-t-2 border-gray-200 p-6">
@@ -35,14 +37,6 @@ export default function BottomBar() {
                         </Heading>
                     </Link>
                 </div>
-                <Button
-                    colorScheme="purple"
-                    size={"xs"}
-                    onClick={logout}
-                    leftIcon={<HiMiniPower />}
-                >
-                    Logout
-                </Button>
             </div>
         </div>
     );
