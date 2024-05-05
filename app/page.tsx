@@ -8,7 +8,7 @@ export default function Login() {
     const { login, authenticated, ready } = usePrivy();
     const router = useRouter();
 
-    if (!ready) return <Skeleton height="20px" />;
+    if (!ready) return <Skeleton width="240px" height="40px" />;
 
     if (authenticated) return router.push("/app");
 

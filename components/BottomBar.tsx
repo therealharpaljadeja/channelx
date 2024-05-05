@@ -1,14 +1,28 @@
-import { Button, Heading } from "@chakra-ui/react";
+import UserDataContext from "@/context/UserDataContext";
+import { Heading, Skeleton } from "@chakra-ui/react";
 import { usePrivy } from "@privy-io/react-auth";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { HiMiniPower } from "react-icons/hi2";
+import { useContext } from "react";
 
 export default function BottomBar() {
     const pathname = usePathname();
     const { authenticated } = usePrivy();
+    const context = useContext(UserDataContext);
 
-    if (!authenticated) return null;
+    if (!authenticated || !context) return null;
+
+    const { loading } = context;
+
+    if (loading)
+        return (
+            <div className="border-t-2 border-gray-200 p-6">
+                <div className="flex justify-between">
+                    <Skeleton className="h-6 w-36" />
+                    <Skeleton className="h-6 w-36" />
+                </div>
+            </div>
+        );
 
     return (
         <div className="border-t-2 border-gray-200 p-6">

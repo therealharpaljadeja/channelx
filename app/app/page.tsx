@@ -12,7 +12,7 @@ export default function OwnedChannels() {
 
     if (!context) return null;
 
-    const { userOwnedChannels } = context;
+    const { userOwnedChannels, loading } = context;
 
     return (
         <Screen>

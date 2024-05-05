@@ -4,6 +4,18 @@ import { ChakraProvider } from "@chakra-ui/react";
 import { PrivyProvider } from "@privy-io/react-auth";
 import theme from "@/theme";
 import { UserDataProvider } from "@/context/UserDataContext";
+// import "@rainbow-me/rainbowkit/styles.css";
+// import { getDefaultConfig, RainbowKitProvider } from "@rainbow-me/rainbowkit";
+// import { WagmiProvider } from "wagmi";
+// import { base } from "wagmi/chains";
+// import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
+
+// const config = getDefaultConfig({
+//     appName: "ChannelX",
+//     projectId: "cb7693d9cb23ef0ab5a94126a7634b52",
+//     chains: [base],
+//     ssr: true, // If your dApp uses server side rendering (SSR)
+// });
 
 export function Providers({ children }: { children: React.ReactNode }) {
     return (

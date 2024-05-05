@@ -5,12 +5,15 @@ import React, { ReactNode, useEffect, useState } from "react";
 type ContextReturnType = {
     userOwnedChannels: Channel[] | null;
     userjoinedChannels: Channel[] | null;
+    loading: boolean;
 };
 
 const UserDataContext = React.createContext<ContextReturnType | null>(null);
 
 export function UserDataProvider({ children }: { children: ReactNode }) {
     const { authenticated, user } = usePrivy();
+
+    const [loading, setLoading] = useState(true);
 
     const [userOwnedChannels, setUserOwnedChannels] = useState<
         Channel[] | null
@@ -45,6 +48,7 @@ export function UserDataProvider({ children }: { children: ReactNode }) {
 
                 setUserOwnedChannels(userOwnedChannels);
                 setUserJoinedChannels(userJoinedChannels);
+                setLoading(false);
             }
         }
 
@@ -61,6 +65,7 @@ export function UserDataProvider({ children }: { children: ReactNode }) {
             value={{
                 userOwnedChannels,
                 userjoinedChannels,
+                loading,
             }}
         >
             {children}
