@@ -3,7 +3,9 @@
 import ChannelConfigurationModal from "@/components/Channel/ChannelConfigurationModal";
 import ChannelInfoModal from "@/components/Channel/ChannelInfoModal";
 import Screen from "@/components/Screen";
+import ScreenList from "@/components/Screen/ScreenList";
 import ScreenTotal from "@/components/Screen/ScreenTotal";
+import ChannelDataContext from "@/context/ChannelDataContext";
 import {
     Heading,
     IconButton,
@@ -12,32 +14,12 @@ import {
     useDisclosure,
 } from "@chakra-ui/react";
 import { usePrivy } from "@privy-io/react-auth";
-import axios from "axios";
-import { useEffect, useState } from "react";
+import { useContext } from "react";
 import { MdInfo, MdOutlineModeEdit } from "react-icons/md";
 
-async function fetchChannelDetails(channelId: string) {
-    let response = await axios.get(
-        `https://api.neynar.com/v2/farcaster/channel?id=${channelId}&type=id`,
-        {
-            headers: {
-                Accept: "application/json",
-                api_key: process.env.NEXT_PUBLIC_NEYNAR_API_KEY,
-            },
-        }
-    );
+export default function ChannelDetailsPage() {
+    const context = useContext(ChannelDataContext);
 
-    let { channel } = response.data;
-
-    return channel;
-}
-
-export default function ChannelDetailsPage({
-    params,
-}: {
-    params: { id: string };
-}) {
-    const { id: channelId } = params;
     const {
         isOpen: isChannelInfoModalOpen,
         onOpen: onChannelInfoModalOpen,
@@ -50,20 +32,11 @@ export default function ChannelDetailsPage({
         onClose: onChannelConfigurationModalClose,
     } = useDisclosure();
 
-    const [channel, setChannel] = useState<Channel | null>(null);
     const { authenticated, user } = usePrivy();
 
-    useEffect(() => {
-        async function init() {
-            let channelDetails = await fetchChannelDetails(channelId);
-            console.log(channelDetails);
-            setChannel(channelDetails);
-        }
+    if (!context) return null;
 
-        if (channelId) {
-            init();
-        }
-    }, [channelId]);
+    const { channel, loading, subscribedUsers } = context;
 
     return (
         <>
@@ -112,7 +85,7 @@ export default function ChannelDetailsPage({
                     </div>
                 )}
                 <ScreenTotal />
-                {/* {userjoinedChannels && <ScreenList items={userjoinedChannels} />} */}
+                {subscribedUsers && <ScreenList items={subscribedUsers} />}
             </Screen>
         </>
     );

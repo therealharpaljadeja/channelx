@@ -7,6 +7,14 @@ type Lead = {
     };
 };
 
+type User = {
+    fid: number;
+    username: string;
+    display_name: string;
+    pfp_url: string;
+    follower_count: number;
+};
+
 type Channel = {
     lead: Lead;
     description: string;
@@ -16,7 +24,3 @@ type Channel = {
     image_url: string;
     id: string;
 };
-
-// export function getChannelHost(channel: { hosts: Host[] }) {
-//     return channel;
-// }

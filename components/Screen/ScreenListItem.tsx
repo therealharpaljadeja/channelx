@@ -2,21 +2,21 @@ import { Avatar, Heading, Spacer, Text } from "@chakra-ui/react";
 import FlowingBalance from "../FlowingBalance";
 import Link from "next/link";
 
-export type ScreenListItem = {
+export type ItemProps = {
+    fid: number | string;
     name: string;
-    followers: number;
     imageUrl: string;
-    id: string;
+    followers: number;
 };
 
 export default function ScreenListItem({
     followers,
     name,
     imageUrl,
-    id,
-}: ScreenListItem) {
+    fid,
+}: ItemProps) {
     return (
-        <Link href={`/channel/${id}`}>
+        <Link href={`/channel/${fid}`}>
             <div className="flex border-2 items-center border-gray-200 space-x-4 rounded-md py-4 px-4 hover:bg-gray-50">
                 <div className="flex space-x-4">
                     <div className="flex">

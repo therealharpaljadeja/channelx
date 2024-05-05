@@ -47,7 +47,7 @@ export default function ChannelList({
             {channelsLeadByUser && (
                 <Flex flexDirection={"column"}>
                     {channelsLeadByUser.map((channel) => (
-                        <ListItem itemData={channel} />
+                        <ListItem key={channel.id} itemData={channel} />
                     ))}
                 </Flex>
             )}

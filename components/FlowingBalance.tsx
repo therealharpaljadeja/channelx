@@ -136,4 +136,6 @@ const FlowingBalance: React.FC<{
     );
 });
 
+FlowingBalance.displayName = "FlowingBalance";
+
 export default FlowingBalance;
