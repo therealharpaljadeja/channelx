@@ -13,6 +13,9 @@ type User = {
     display_name: string;
     pfp_url: string;
     follower_count: number;
+    startingBalance?: string;
+    startingBalanceDate?: string;
+    flowRate?: string;
 };
 
 type Channel = {

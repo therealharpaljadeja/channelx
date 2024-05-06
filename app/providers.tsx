@@ -14,8 +14,10 @@ import { UserDataProvider } from "@/context/UserDataContext";
 //     appName: "ChannelX",
 //     projectId: "cb7693d9cb23ef0ab5a94126a7634b52",
 //     chains: [base],
-//     ssr: true, // If your dApp uses server side rendering (SSR)
+//     ssr: false, // If your dApp uses server side rendering (SSR)
 // });
+
+// const queryClient = new QueryClient();
 
 export function Providers({ children }: { children: React.ReactNode }) {
     return (
@@ -33,7 +35,13 @@ export function Providers({ children }: { children: React.ReactNode }) {
             }}
         >
             <ChakraProvider theme={theme}>
+                {/* <WagmiProvider config={config}>
+                    <QueryClientProvider client={queryClient}>
+                        <RainbowKitProvider> */}
                 <UserDataProvider>{children}</UserDataProvider>
+                {/* </RainbowKitProvider>
+                    </QueryClientProvider>
+                </WagmiProvider> */}
             </ChakraProvider>{" "}
         </PrivyProvider>
     );

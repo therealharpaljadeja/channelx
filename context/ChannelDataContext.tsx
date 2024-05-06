@@ -8,6 +8,15 @@ type ContextReturnType = {
     loading: boolean;
 };
 
+type cfaStream = {
+    currentFlowRate: string;
+    sender: {
+        id: string;
+    };
+    streamedUntilUpdatedAt: string;
+    updatedAtTimestamp: string;
+};
+
 async function fetchChannelDetails(channelId: string) {
     let response = await axios.get(
         `https://api.neynar.com/v2/farcaster/channel?id=${channelId}&type=id`,
@@ -24,10 +33,48 @@ async function fetchChannelDetails(channelId: string) {
     return channel;
 }
 
-async function fetchAddressesStreamingToChannelOwner(channelOwner: string) {
-    // let response = await axios.get("");
+async function cfaStreamsToChannelOwner(
+    channelOwnerAddress: string
+): Promise<{ cfaStreams: cfaStream[] }> {
+    let query = `query {
+        cfaStreams: streams(
+          where: {receiver:"${channelOwnerAddress}", token: "0x1eff3dd78f4a14abfa9fa66579bd3ce9e1b30529"}
+        ) {
+          currentFlowRate
+          streamedUntilUpdatedAt
+          updatedAtTimestamp
+          sender {
+            id
+          }
+        }
+      }`;
 
-    return ["0x22b2DD2CFEF2018D15543c484aceF6D9B5435863"];
+    let response = await fetch(
+        "https://base-mainnet.subgraph.x.superfluid.dev/",
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+            },
+            body: JSON.stringify({
+                query,
+            }),
+        }
+    );
+
+    let { data } = await response.json();
+
+    return data;
+}
+
+async function fetchAddressesStreamingToChannelOwner(cfaStreams: cfaStream[]) {
+    let streamSenders = cfaStreams.map(
+        (stream: { currentFlowRate: string; sender: { id: string } }) =>
+            stream.sender.id
+    );
+
+    return streamSenders;
 }
 
 async function fetchFarcasterUsersFromVerifiedAddresses(
@@ -46,13 +93,7 @@ async function fetchFarcasterUsersFromVerifiedAddresses(
 
     let data = response.data;
 
-    let users: User[] = [];
-
-    for (const address in data) {
-        users = [...users, ...data[address]];
-    }
-
-    return users;
+    return data;
 }
 
 const ChannelDataContext = React.createContext<ContextReturnType | null>(null);
@@ -71,19 +112,38 @@ export function ChannelDataProvider({ children }: { children: ReactNode }) {
             let channelDetails = await fetchChannelDetails(id as string);
 
             if (channelDetails && channelDetails.lead) {
-                let addressesStreamingToChannelOwner =
-                    await fetchAddressesStreamingToChannelOwner(
-                        channelDetails.lead.verified_addresses.eth_addresses[0]
-                    );
+                let { cfaStreams } = await cfaStreamsToChannelOwner(
+                    channelDetails.lead.verified_addresses.eth_addresses[0]
+                );
 
-                let subscribedUsers =
+                let addressesStreamingToChannelOwner =
+                    await fetchAddressesStreamingToChannelOwner(cfaStreams);
+
+                let subscribedUsersData =
                     await fetchFarcasterUsersFromVerifiedAddresses(
                         addressesStreamingToChannelOwner
                     );
 
+                let subscribedUsers: User[] = [];
+
+                for (const address in subscribedUsersData) {
+                    let user = subscribedUsersData[address][0];
+
+                    for (let i = 0; i < cfaStreams.length; i++) {
+                        if (address === cfaStreams[i].sender.id) {
+                            user.startingBalance =
+                                cfaStreams[i].streamedUntilUpdatedAt;
+                            user.startingBalanceDate =
+                                cfaStreams[i].updatedAtTimestamp;
+                            user.flowRate = cfaStreams[i].currentFlowRate;
+                        }
+                    }
+
+                    subscribedUsers = [...subscribedUsers, user];
+                }
+
                 setSubscribedUsers(subscribedUsers);
             }
-            console.log(channelDetails);
             setChannel(channelDetails);
             setLoading(false);
         }

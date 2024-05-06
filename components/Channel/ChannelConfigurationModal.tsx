@@ -2,8 +2,6 @@ import {
     Button,
     Heading,
     Input,
-    InputGroup,
-    InputRightAddon,
     Modal,
     ModalBody,
     ModalCloseButton,
@@ -40,17 +38,6 @@ export default function ChannelConfigurationModal({
                         <Heading size="md">{channel.name}</Heading>
                     </div>
                     <div className="flex flex-col items-start w-full space-y-4">
-                        <div className="flex flex-col space-y-2 justify-between items-start w-full">
-                            <Text fontSize="sm">Channel Owner</Text>
-                            <Input placeholder="0x..." />
-                        </div>
-                        <div className="flex flex-col space-y-2 justify-between items-start w-full">
-                            <Text fontSize="sm">Stream Rate</Text>
-                            <InputGroup>
-                                <Input placeholder="69" />
-                                <InputRightAddon>DEGENx/mo</InputRightAddon>
-                            </InputGroup>
-                        </div>
                         <div className="flex flex-col space-y-2 justify-between items-start w-full">
                             <Text fontSize="sm">Threshold</Text>
                             <Input placeholder="5" />

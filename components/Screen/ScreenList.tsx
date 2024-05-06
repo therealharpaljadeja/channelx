@@ -1,4 +1,4 @@
-import Item, { ItemProps } from "./ScreenListItem";
+import Item from "./ScreenListItem";
 
 function determineIfItemIsUser(item: Channel | User): item is User {
     if ((item as User).pfp_url) {
@@ -16,12 +16,18 @@ export default function ScreenList({ items }: { items: Channel[] | User[] }) {
                 let name;
                 let followers;
                 let imageUrl;
+                let startingBalance;
+                let startingBalanceDate;
+                let flowRate;
 
                 if (determineIfItemIsUser(item)) {
                     fid = item.fid;
                     name = item.display_name;
                     followers = item.follower_count;
                     imageUrl = item.pfp_url;
+                    startingBalance = item.startingBalance;
+                    startingBalanceDate = item.startingBalanceDate;
+                    flowRate = item.flowRate;
                 } else {
                     fid = item.id;
                     name = item.name;
@@ -36,6 +42,9 @@ export default function ScreenList({ items }: { items: Channel[] | User[] }) {
                         followers={followers}
                         imageUrl={imageUrl}
                         fid={fid}
+                        startingBalance={startingBalance}
+                        startingBalanceDate={startingBalanceDate}
+                        flowRate={flowRate}
                     />
                 );
             })}
