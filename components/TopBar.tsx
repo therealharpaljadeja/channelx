@@ -1,6 +1,7 @@
 import { usePrivy } from "@privy-io/react-auth";
 import { Button } from "@chakra-ui/react";
 import { HiMiniPower } from "react-icons/hi2";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 export default function TopBar() {
     const { logout, login, authenticated } = usePrivy();
@@ -30,6 +31,7 @@ export default function TopBar() {
                         Sign in with Farcaster
                     </Button>
                 )}
+                <ConnectButton />
             </div>
         </div>
     );

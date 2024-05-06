@@ -63,7 +63,7 @@ export const useSignificantFlowingDecimal = (
                 ""
             ).length; // We're basically counting the zeroes.
 
-        return Math.min(lengthToFirstSignificantDecimal - 2, 18); // Don't go over 18.
+        return Math.min(lengthToFirstSignificantDecimal, 18); // Don't go over 18.
     }, [flowRate, animationStepTimeInMs]);
 
 const useFlowingBalance = (
@@ -89,9 +89,10 @@ const useFlowingBalance = (
                 const elapsedTimeInMilliseconds = BigInt(
                     Date.now() - startingBalanceTime
                 );
+
                 const flowingBalance_ =
                     startingBalance +
-                    (flowRate * elapsedTimeInMilliseconds) / BigInt(1000);
+                    (flowRate * elapsedTimeInMilliseconds) / BigInt(10000);
 
                 setFlowingBalance(flowingBalance_);
 

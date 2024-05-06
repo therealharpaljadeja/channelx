@@ -4,20 +4,22 @@ import { ChakraProvider } from "@chakra-ui/react";
 import { PrivyProvider } from "@privy-io/react-auth";
 import theme from "@/theme";
 import { UserDataProvider } from "@/context/UserDataContext";
-// import "@rainbow-me/rainbowkit/styles.css";
-// import { getDefaultConfig, RainbowKitProvider } from "@rainbow-me/rainbowkit";
-// import { WagmiProvider } from "wagmi";
-// import { base } from "wagmi/chains";
-// import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
+import "@rainbow-me/rainbowkit/styles.css";
+import { getDefaultConfig, RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import { WagmiProvider } from "wagmi";
+import { base } from "wagmi/chains";
+import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 
-// const config = getDefaultConfig({
-//     appName: "ChannelX",
-//     projectId: "cb7693d9cb23ef0ab5a94126a7634b52",
-//     chains: [base],
-//     ssr: false, // If your dApp uses server side rendering (SSR)
-// });
+const config = getDefaultConfig({
+    appName: "ChannelX",
+    projectId: "cb7693d9cb23ef0ab5a94126a7634b52",
+    chains: [base],
+    ssr: false, // If your dApp uses server side rendering (SSR)
+});
 
-// const queryClient = new QueryClient();
+// console.log(config);
+
+const queryClient = new QueryClient();
 
 export function Providers({ children }: { children: React.ReactNode }) {
     return (
@@ -35,13 +37,13 @@ export function Providers({ children }: { children: React.ReactNode }) {
             }}
         >
             <ChakraProvider theme={theme}>
-                {/* <WagmiProvider config={config}>
+                <WagmiProvider config={config}>
                     <QueryClientProvider client={queryClient}>
-                        <RainbowKitProvider> */}
-                <UserDataProvider>{children}</UserDataProvider>
-                {/* </RainbowKitProvider>
+                        <RainbowKitProvider>
+                            <UserDataProvider>{children}</UserDataProvider>
+                        </RainbowKitProvider>
                     </QueryClientProvider>
-                </WagmiProvider> */}
+                </WagmiProvider>
             </ChakraProvider>{" "}
         </PrivyProvider>
     );
