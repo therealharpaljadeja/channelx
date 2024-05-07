@@ -14,6 +14,27 @@ import {
 import { MdCheck, MdContentCopy } from "react-icons/md";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { useState } from "react";
+import { Framework } from "@superfluid-finance/sdk-core";
+import { ethers } from "ethers";
+import { Config, useAccount, useConfig } from "wagmi";
+import { Account, Chain, Client, Transport } from "viem";
+import { getConnectorClient } from "@wagmi/core";
+
+const provider = new ethers.providers.JsonRpcProvider(
+    "https://base.llamarpc.com"
+);
+
+function clientToSigner(client: Client<Transport, Chain, Account>) {
+    const { account, chain, transport } = client;
+    const network = {
+        chainId: chain.id,
+        name: chain.name,
+        ensAddress: chain.contracts?.ensRegistry?.address,
+    };
+    const provider = new ethers.providers.Web3Provider(transport, network);
+    const signer = provider.getSigner(account.address);
+    return signer;
+}
 
 export default function ChannelInfoModal({
     channel,
@@ -25,7 +46,50 @@ export default function ChannelInfoModal({
     onClose: () => void;
 }) {
     const [copied, setCopied] = useState(false);
+    const { address } = useAccount();
+    const config = useConfig();
+    const [loading, setLoading] = useState(false);
+
     if (!channel) return null;
+
+    async function getEthersSigner(
+        config: Config,
+        { chainId }: { chainId?: number } = {}
+    ) {
+        const client = await getConnectorClient(config, { chainId });
+        return clientToSigner(client);
+    }
+
+    async function startStream() {
+        setLoading(true);
+        try {
+            const sf = await Framework.create({
+                chainId: 8453, // Replace with your chain ID
+                provider,
+            });
+
+            const degenx = await sf.loadSuperToken("DEGENx");
+
+            if (channel?.lead.verified_addresses.eth_addresses) {
+                const createFlowOperation = degenx.createFlow({
+                    sender: address, // Replace with the sender's address
+                    receiver: channel?.lead.verified_addresses.eth_addresses[0], // Replace with the receiver's address
+                    flowRate: "115740740740740", // Replace with the desired flow rate
+                });
+
+                const txnResponse = await createFlowOperation.exec(
+                    await getEthersSigner(config)
+                );
+                const txnReceipt = await txnResponse.wait();
+
+                console.log(txnReceipt);
+            }
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setLoading(false);
+        }
+    }
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} size="sm" isCentered>
@@ -101,9 +165,17 @@ export default function ChannelInfoModal({
                     </div>
                 </ModalBody>
                 <ModalFooter>
-                    <Button colorScheme="purple" size="lg" className="w-full">
-                        Start Stream
-                    </Button>
+                    {address && (
+                        <Button
+                            onClick={startStream}
+                            isLoading={loading}
+                            colorScheme="purple"
+                            size="lg"
+                            className="w-full"
+                        >
+                            Start Stream
+                        </Button>
+                    )}
                 </ModalFooter>
             </ModalContent>
         </Modal>
