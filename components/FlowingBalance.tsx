@@ -12,14 +12,17 @@ export const absoluteValue = (n: bigint) => {
 
 export function toFixedUsingString(
     numStr: string,
-    decimalPlaces: number
+    decimalPlaces: number = 5
 ): string {
     const [wholePart, decimalPart] = numStr.split(".");
 
     if (!decimalPart || decimalPart.length <= decimalPlaces) {
+        // padEnd(targetLength, padString)
         return numStr.padEnd(wholePart.length + 1 + decimalPlaces, "0");
     }
 
+    // Rounding up if the number after decimalPlaces length is greater than 5
+    // 5.04924379 = 5.049244
     const decimalPartBigInt = BigInt(
         `${decimalPart.slice(0, decimalPlaces)}${
             decimalPart[decimalPlaces] >= "5" ? "1" : "0"
@@ -47,15 +50,24 @@ export const useSignificantFlowingDecimal = (
         const [beforeEtherDecimal, afterEtherDecimal] =
             formatEther(flowRatePerTick).split(".");
 
+        // What does this mean?
+        // Does this mean that any positive flow the decimalPlaces value will be 0?
         const isFlowingInWholeNumbers =
             absoluteValue(BigInt(beforeEtherDecimal)) > BigInt(0);
 
+        // Does this mean that any positive flow the decimalPlaces value will be 0?
         if (isFlowingInWholeNumbers) {
             return 0; // Flowing in whole numbers per tick.
         }
+
+        // 5.002143
+        // numberAfterDecimalWithoutLeadingZeroes = 2143
         const numberAfterDecimalWithoutLeadingZeroes =
             BigInt(afterEtherDecimal);
 
+        // afterEtherDecimal = 002143
+        // "002143" -> "00" -> lengthToFirstSignificantDecimal = 2
+        // Is this correct?
         const lengthToFirstSignificantDecimal = afterEtherDecimal
             .toString()
             .replace(
@@ -67,34 +79,60 @@ export const useSignificantFlowingDecimal = (
     }, [flowRate, animationStepTimeInMs]);
 
 const useFlowingBalance = (
-    startingBalance: bigint,
-    startingBalanceDate: Date,
-    flowRate: bigint
+    startingBalance: bigint[],
+    startingBalanceDate: Date[],
+    flowRate: bigint[]
 ) => {
-    const [flowingBalance, setFlowingBalance] = useState(startingBalance);
+    // Add startingBalances here.
+    let initialValue = BigInt(0);
 
-    const startingBalanceTime = startingBalanceDate.getTime();
+    let effectiveStartingBalace = startingBalance.reduce(
+        (accumulator, balance) => accumulator + balance,
+        initialValue
+    );
+
+    const [flowingBalance, setFlowingBalance] = useState(
+        effectiveStartingBalace
+    );
+
+    const startingBalanceTime = startingBalanceDate[0].getTime();
+
     useEffect(() => {
-        if (flowRate === BigInt(0)) return;
+        if (flowRate.length === 0) return;
 
         let lastAnimationTimestamp = 0;
 
         const animationStep = (currentAnimationTimestamp: number) => {
             const animationFrameId =
                 window.requestAnimationFrame(animationStep);
+
+            // Checking if animation update is needed 1000 - 40 (default value)
             if (
                 currentAnimationTimestamp - lastAnimationTimestamp >
                 ANIMATION_MINIMUM_STEP_TIME
             ) {
-                const elapsedTimeInMilliseconds = BigInt(
-                    Date.now() - startingBalanceTime
-                );
+                let effectiveFlowingBalance_ = BigInt(0);
 
-                const flowingBalance_ =
-                    startingBalance +
-                    (flowRate * elapsedTimeInMilliseconds) / BigInt(10000);
+                for (let i = 0; i < startingBalance.length; i++) {
+                    const startingBalanceTime =
+                        startingBalanceDate[i].getTime();
 
-                setFlowingBalance(flowingBalance_);
+                    // Calculate elapsedTimeInMilliseconds for every stream individually
+
+                    const elapsedTimeInMilliseconds = BigInt(
+                        Date.now() - startingBalanceTime
+                    );
+
+                    // Divide by 1000 or 10,000?
+                    const flowingBalance_ =
+                        startingBalance[i] +
+                        (flowRate[i] * elapsedTimeInMilliseconds) /
+                            BigInt(1000);
+
+                    effectiveFlowingBalance_ += flowingBalance_;
+                }
+
+                setFlowingBalance(effectiveFlowingBalance_);
 
                 lastAnimationTimestamp = currentAnimationTimestamp;
             }
@@ -112,9 +150,9 @@ const useFlowingBalance = (
 
 // FlowingBalance Component
 const FlowingBalance: React.FC<{
-    startingBalance: bigint;
-    startingBalanceDate: Date;
-    flowRate: bigint;
+    startingBalance: bigint[];
+    startingBalanceDate: Date[];
+    flowRate: bigint[];
     size?: string;
 }> = memo(({ startingBalance, startingBalanceDate, flowRate, size = "md" }) => {
     const flowingBalance = useFlowingBalance(
@@ -123,8 +161,14 @@ const FlowingBalance: React.FC<{
         flowRate
     );
 
+    // Add flowRates here for the below function.
+    let effectiveFlowRate = flowRate.reduce(
+        (accumulator, flowRate) => accumulator + flowRate,
+        BigInt(0)
+    );
+
     const decimalPlaces = useSignificantFlowingDecimal(
-        flowRate,
+        effectiveFlowRate,
         ANIMATION_MINIMUM_STEP_TIME
     );
 
@@ -132,7 +176,7 @@ const FlowingBalance: React.FC<{
         <Heading className="flowing-balance" size={size}>
             {decimalPlaces !== undefined
                 ? toFixedUsingString(formatEther(flowingBalance), decimalPlaces)
-                : formatEther(flowingBalance)}
+                : toFixedUsingString(formatEther(flowingBalance), 5)}
         </Heading>
     );
 });

@@ -17,8 +17,6 @@ const config = getDefaultConfig({
     ssr: false, // If your dApp uses server side rendering (SSR)
 });
 
-// console.log(config);
-
 const queryClient = new QueryClient();
 
 export function Providers({ children }: { children: React.ReactNode }) {

@@ -7,9 +7,9 @@ export type ItemProps = {
     name: string;
     imageUrl: string;
     followers: number;
-    startingBalance?: string;
-    startingBalanceDate?: string;
-    flowRate?: string;
+    streamedUntilUpdatedAt?: string;
+    updatedAtTimestamp?: string;
+    currentFlowRate?: string;
 };
 
 export default function ScreenListItem({
@@ -17,12 +17,12 @@ export default function ScreenListItem({
     name,
     imageUrl,
     fid,
-    startingBalance,
-    startingBalanceDate,
-    flowRate,
+    streamedUntilUpdatedAt,
+    updatedAtTimestamp,
+    currentFlowRate,
 }: ItemProps) {
     return (
-        <Link href={flowRate ? "#" : `/channel/${fid}`}>
+        <Link href={currentFlowRate ? "#" : `/channel/${fid}`}>
             <div className="flex border-2 items-center border-gray-200 space-x-4 rounded-md py-4 px-4 hover:bg-gray-50">
                 <div className="flex space-x-4">
                     <div className="flex">
@@ -36,21 +36,26 @@ export default function ScreenListItem({
                 <Spacer />
                 <div className="flex">
                     <div className="flex space-x-[1px] items-end">
-                        {startingBalance && startingBalanceDate && flowRate && (
-                            <>
-                                <FlowingBalance
-                                    startingBalance={BigInt(startingBalance)}
-                                    startingBalanceDate={
-                                        new Date(
-                                            Number(startingBalanceDate) * 1000
-                                        )
-                                    }
-                                    flowRate={BigInt(flowRate)}
-                                    size="sm"
-                                />
-                                <Text fontSize="xs">DEGENx</Text>
-                            </>
-                        )}
+                        {streamedUntilUpdatedAt &&
+                            updatedAtTimestamp &&
+                            currentFlowRate && (
+                                <>
+                                    <FlowingBalance
+                                        startingBalance={[
+                                            BigInt(streamedUntilUpdatedAt),
+                                        ]}
+                                        startingBalanceDate={[
+                                            new Date(
+                                                Number(updatedAtTimestamp) *
+                                                    1000
+                                            ),
+                                        ]}
+                                        flowRate={[BigInt(currentFlowRate)]}
+                                        size="sm"
+                                    />
+                                    <Text fontSize="xs">DEGENx</Text>
+                                </>
+                            )}
                     </div>
                 </div>
             </div>

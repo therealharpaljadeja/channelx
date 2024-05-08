@@ -36,7 +36,14 @@ export default function ChannelDetailsPage() {
 
     if (!context) return null;
 
-    const { channel, loading, subscribedUsers } = context;
+    const {
+        channel,
+        loading,
+        subscribedUsers,
+        currentFlowRates,
+        streamedUntilUpdatedAts,
+        updatedAtTimestamps,
+    } = context;
 
     return (
         <>
@@ -84,7 +91,15 @@ export default function ChannelDetailsPage() {
                         </div>
                     </div>
                 )}
-                <ScreenTotal />
+                {streamedUntilUpdatedAts &&
+                    updatedAtTimestamps &&
+                    currentFlowRates && (
+                        <ScreenTotal
+                            streamedUntilUpdatedAts={streamedUntilUpdatedAts}
+                            updatedAtTimestamps={updatedAtTimestamps}
+                            currentFlowRates={currentFlowRates}
+                        />
+                    )}
                 {subscribedUsers && <ScreenList items={subscribedUsers} />}
             </Screen>
         </>

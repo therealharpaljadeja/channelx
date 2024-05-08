@@ -2,6 +2,7 @@ import { Flex, Heading } from "@chakra-ui/react";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import ListItem from "./Channel";
+import { Channel, Lead } from "@/utils/api";
 
 export default function ChannelList({
     fid,
@@ -15,7 +16,6 @@ export default function ChannelList({
     useEffect(() => {
         async function getChannels() {
             if (fid) {
-                console.log(process.env.NEXT_PUBLIC_NEYNAR_API_KEY);
                 let response = await axios.get(
                     `https://api.neynar.com/v2/farcaster/user/channels?fid=${fid}&limit=50`,
                     {

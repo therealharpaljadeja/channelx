@@ -1,4 +1,5 @@
 import Item from "./ScreenListItem";
+import { Channel, User } from "@/utils/api";
 
 function determineIfItemIsUser(item: Channel | User): item is User {
     if ((item as User).pfp_url) {
@@ -16,23 +17,26 @@ export default function ScreenList({ items }: { items: Channel[] | User[] }) {
                 let name;
                 let followers;
                 let imageUrl;
-                let startingBalance;
-                let startingBalanceDate;
-                let flowRate;
+                let streamedUntilUpdatedAt;
+                let updatedAtTimestamp;
+                let currentFlowRate;
 
                 if (determineIfItemIsUser(item)) {
                     fid = item.fid;
                     name = item.display_name;
                     followers = item.follower_count;
                     imageUrl = item.pfp_url;
-                    startingBalance = item.startingBalance;
-                    startingBalanceDate = item.startingBalanceDate;
-                    flowRate = item.flowRate;
+                    streamedUntilUpdatedAt = item.streamedUntilUpdatedAt;
+                    updatedAtTimestamp = item.updatedAtTimestamp;
+                    currentFlowRate = item.currentFlowRate;
                 } else {
                     fid = item.id;
                     name = item.name;
                     followers = item.follower_count;
                     imageUrl = item.image_url;
+                    streamedUntilUpdatedAt = item.streamedUntilUpdatedAt;
+                    updatedAtTimestamp = item.updatedAtTimestamp;
+                    currentFlowRate = item.currentFlowRate;
                 }
 
                 return (
@@ -42,9 +46,9 @@ export default function ScreenList({ items }: { items: Channel[] | User[] }) {
                         followers={followers}
                         imageUrl={imageUrl}
                         fid={fid}
-                        startingBalance={startingBalance}
-                        startingBalanceDate={startingBalanceDate}
-                        flowRate={flowRate}
+                        streamedUntilUpdatedAt={streamedUntilUpdatedAt}
+                        updatedAtTimestamp={updatedAtTimestamp}
+                        currentFlowRate={currentFlowRate}
                     />
                 );
             })}

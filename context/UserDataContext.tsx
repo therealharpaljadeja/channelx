@@ -1,11 +1,21 @@
+import {
+    Channel,
+    fetchAllChannelsOwnedByAnFid,
+    fetchAllFarcasterUsersFromAddresses,
+    fetchAllOutgoingStreamsFromAnAddress,
+    fetchUserBasedOnFID,
+    getAddressesFromStreams,
+} from "@/utils/api";
 import { usePrivy } from "@privy-io/react-auth";
-import axios from "axios";
 import React, { ReactNode, useEffect, useState } from "react";
 
 type ContextReturnType = {
     userOwnedChannels: Channel[] | null;
     userjoinedChannels: Channel[] | null;
     loading: boolean;
+    streamedUntilUpdatedAts: string[] | null;
+    updatedAtTimestamps: string[] | null;
+    currentFlowRates: string[] | null;
 };
 
 const UserDataContext = React.createContext<ContextReturnType | null>(null);
@@ -21,34 +31,90 @@ export function UserDataProvider({ children }: { children: ReactNode }) {
     const [userjoinedChannels, setUserJoinedChannels] = useState<
         Channel[] | null
     >(null);
+    const [streamedUntilUpdatedAts, setStreamedUntilUpdatedAts] = useState<
+        string[] | null
+    >(null);
+    const [updatedAtTimestamps, setUpdatedAtTimestamps] = useState<
+        string[] | null
+    >(null);
+    const [currentFlowRates, setCurrentFlowRates] = useState<string[] | null>(
+        null
+    );
 
     useEffect(() => {
         async function getChannels(fid: number) {
-            let response = await axios.get(
-                `https://api.neynar.com/v2/farcaster/user/channels?fid=${fid}&limit=50`,
-                {
-                    headers: {
-                        Accept: "application/json",
-                        api_key: process.env.NEXT_PUBLIC_NEYNAR_API_KEY,
-                    },
-                }
+            let allChannelsFidOwns = await fetchAllChannelsOwnedByAnFid(fid);
+
+            setUserOwnedChannels(allChannelsFidOwns);
+            setLoading(false);
+        }
+
+        async function getUserJoinedChannels(fid: number) {
+            let user = await fetchUserBasedOnFID(fid);
+
+            let { cfaStreams } = await fetchAllOutgoingStreamsFromAnAddress(
+                user.verified_addresses.eth_addresses[0]
             );
 
-            if (response.data) {
-                let { channels: allChannelsUserFollows } = response.data;
+            if (cfaStreams.length) {
+                let receivers = await getAddressesFromStreams(cfaStreams);
 
-                const userOwnedChannels = [];
-                const userJoinedChannels = [];
+                if (receivers) {
+                    let channelOwners =
+                        await fetchAllFarcasterUsersFromAddresses(receivers);
 
-                for (let i = 0; i < allChannelsUserFollows.length; i++) {
-                    if (allChannelsUserFollows[i].lead.fid == fid)
-                        userOwnedChannels.push(allChannelsUserFollows[i]);
-                    else userJoinedChannels.push(allChannelsUserFollows[i]);
+                    let subscribedChannels: any[] = [];
+
+                    for (const owner in channelOwners) {
+                        // Shit code
+
+                        let fid = channelOwners[owner][0].fid;
+
+                        let ownedChannels = await fetchAllChannelsOwnedByAnFid(
+                            fid
+                        );
+
+                        let streamedUntilUpdatedAts = [];
+                        let updatedAtTimestamps = [];
+                        let currentFlowRates = [];
+
+                        for (let i = 0; i < ownedChannels.length; i++) {
+                            let channel = ownedChannels[i];
+
+                            for (let j = 0; j < cfaStreams.length; j++) {
+                                if (
+                                    cfaStreams[j].receiver.id ===
+                                    channel.lead.verified_addresses
+                                        .eth_addresses[0]
+                                ) {
+                                    channel.streamedUntilUpdatedAt =
+                                        cfaStreams[j].streamedUntilUpdatedAt;
+                                    channel.updatedAtTimestamp =
+                                        cfaStreams[j].updatedAtTimestamp;
+                                    channel.currentFlowRate =
+                                        cfaStreams[j].currentFlowRate;
+
+                                    streamedUntilUpdatedAts.push(
+                                        cfaStreams[i].streamedUntilUpdatedAt
+                                    );
+                                    updatedAtTimestamps.push(
+                                        cfaStreams[i].updatedAtTimestamp
+                                    );
+                                    currentFlowRates.push(
+                                        cfaStreams[i].currentFlowRate
+                                    );
+                                }
+                            }
+
+                            subscribedChannels.push(channel);
+                        }
+
+                        setCurrentFlowRates(currentFlowRates);
+                        setStreamedUntilUpdatedAts(streamedUntilUpdatedAts);
+                        setUpdatedAtTimestamps(updatedAtTimestamps);
+                        setUserJoinedChannels(subscribedChannels);
+                    }
                 }
-
-                setUserOwnedChannels(userOwnedChannels);
-                setUserJoinedChannels(userJoinedChannels);
-                setLoading(false);
             }
         }
 
@@ -56,6 +122,8 @@ export function UserDataProvider({ children }: { children: ReactNode }) {
             if (user && user.farcaster && user.farcaster.fid) {
                 const fid = user.farcaster.fid;
                 getChannels(fid);
+                // getUserJoinedChannels(user.farcaster.fid);
+                getUserJoinedChannels(399712);
             }
         }
     }, [authenticated]);
@@ -66,6 +134,9 @@ export function UserDataProvider({ children }: { children: ReactNode }) {
                 userOwnedChannels,
                 userjoinedChannels,
                 loading,
+                streamedUntilUpdatedAts,
+                updatedAtTimestamps,
+                currentFlowRates,
             }}
         >
             {children}

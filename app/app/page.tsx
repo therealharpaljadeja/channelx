@@ -12,12 +12,26 @@ export default function OwnedChannels() {
 
     if (!context) return null;
 
-    const { userOwnedChannels, loading } = context;
+    const {
+        userOwnedChannels,
+        loading,
+        currentFlowRates,
+        streamedUntilUpdatedAts,
+        updatedAtTimestamps,
+    } = context;
 
     return (
         <Screen>
             <ScreenTitle>Owned Channels</ScreenTitle>
-            <ScreenTotal />
+            {/* {streamedUntilUpdatedAts &&
+                updatedAtTimestamps &&
+                currentFlowRates && (
+                    <ScreenTotal
+                        streamedUntilUpdatedAts={streamedUntilUpdatedAts}
+                        updatedAtTimestamps={updatedAtTimestamps}
+                        currentFlowRates={currentFlowRates}
+                    />
+                )} */}
             {userOwnedChannels && <ScreenList items={userOwnedChannels} />}
         </Screen>
     );
