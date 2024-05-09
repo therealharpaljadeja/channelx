@@ -12,7 +12,7 @@ export const absoluteValue = (n: bigint) => {
 
 export function toFixedUsingString(
     numStr: string,
-    decimalPlaces: number = 5
+    decimalPlaces: number
 ): string {
     const [wholePart, decimalPart] = numStr.split(".");
 
@@ -23,6 +23,7 @@ export function toFixedUsingString(
 
     // Rounding up if the number after decimalPlaces length is greater than 5
     // 5.04924379 = 5.049244
+
     const decimalPartBigInt = BigInt(
         `${decimalPart.slice(0, decimalPlaces)}${
             decimalPart[decimalPlaces] >= "5" ? "1" : "0"
@@ -68,6 +69,7 @@ export const useSignificantFlowingDecimal = (
         // afterEtherDecimal = 002143
         // "002143" -> "00" -> lengthToFirstSignificantDecimal = 2
         // Is this correct?
+
         const lengthToFirstSignificantDecimal = afterEtherDecimal
             .toString()
             .replace(

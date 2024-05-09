@@ -13,12 +13,14 @@ import {
 } from "@chakra-ui/react";
 import { MdCheck, MdContentCopy } from "react-icons/md";
 import { CopyToClipboard } from "react-copy-to-clipboard";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Framework } from "@superfluid-finance/sdk-core";
 import { ethers } from "ethers";
 import { Config, useAccount, useConfig } from "wagmi";
 import { Account, Chain, Client, Transport } from "viem";
 import { getConnectorClient } from "@wagmi/core";
+import { Channel } from "@/utils/api";
+import { createClient } from "@vercel/kv";
 
 const provider = new ethers.providers.JsonRpcProvider(
     "https://base.llamarpc.com"
@@ -36,6 +38,11 @@ function clientToSigner(client: Client<Transport, Chain, Account>) {
     return signer;
 }
 
+const kv = createClient({
+    url: process.env.NEXT_PUBLIC_KV_REST_API_URL as string,
+    token: process.env.NEXT_PUBLIC_KV_REST_API_TOKEN as string,
+});
+
 export default function ChannelInfoModal({
     channel,
     isOpen,
@@ -49,6 +56,18 @@ export default function ChannelInfoModal({
     const { address } = useAccount();
     const config = useConfig();
     const [loading, setLoading] = useState(false);
+    const [threshold, setThreshold] = useState("");
+
+    useEffect(() => {
+        async function getChannel() {
+            if (channel) {
+                let threshold = (await kv.get(channel?.id)) as string;
+                setThreshold(threshold);
+            }
+        }
+
+        getChannel();
+    }, [channel]);
 
     if (!channel) return null;
 
@@ -68,7 +87,7 @@ export default function ChannelInfoModal({
                 provider,
             });
 
-            const degenx = await sf.loadSuperToken("DEGENx");
+            const degenx = await sf.loadSuperToken("degenx");
 
             if (channel?.lead.verified_addresses.eth_addresses) {
                 const createFlowOperation = degenx.createFlow({
@@ -154,14 +173,19 @@ export default function ChannelInfoModal({
                                 </Text>
                             </div>
                         </div>
-                        <div className="flex space-y-2 justify-between items-center w-full">
-                            <Text fontSize="sm">Threshold</Text>
-                            <div className="flex justify-between items-center p-2">
-                                <Text fontSize="md" className="text-gray-700">
-                                    10 DEGENx
-                                </Text>
+                        {threshold && (
+                            <div className="flex space-y-2 justify-between items-center w-full">
+                                <Text fontSize="sm">Threshold</Text>
+                                <div className="flex justify-between items-center p-2">
+                                    <Text
+                                        fontSize="md"
+                                        className="text-gray-700"
+                                    >
+                                        {threshold} DEGENx
+                                    </Text>
+                                </div>
                             </div>
-                        </div>
+                        )}
                     </div>
                 </ModalBody>
                 <ModalFooter>
