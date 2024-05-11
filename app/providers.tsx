@@ -6,19 +6,39 @@ import theme from "@/theme";
 import { UserDataProvider } from "@/context/UserDataContext";
 import "@rainbow-me/rainbowkit/styles.css";
 import {
+    connectorsForWallets,
     getDefaultConfig,
     lightTheme,
     RainbowKitProvider,
 } from "@rainbow-me/rainbowkit";
-import { WagmiProvider } from "wagmi";
+import { createConfig, WagmiProvider } from "wagmi";
 import { base } from "wagmi/chains";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
+import {
+    metaMaskWallet,
+    walletConnectWallet,
+} from "@rainbow-me/rainbowkit/wallets";
+import { createClient, http } from "viem";
 
-const config = getDefaultConfig({
-    appName: "ChannelX",
-    projectId: "cb7693d9cb23ef0ab5a94126a7634b52",
+const connectors = connectorsForWallets(
+    [
+        {
+            groupName: "Recommended",
+            wallets: [metaMaskWallet, walletConnectWallet],
+        },
+    ],
+    {
+        appName: "ChannelX",
+        projectId: "cb7693d9cb23ef0ab5a94126a7634b52",
+    }
+);
+
+const config = createConfig({
     chains: [base],
-    ssr: false, // If your dApp uses server side rendering (SSR)
+    connectors,
+    client({ chain }) {
+        return createClient({ chain, transport: http() });
+    },
 });
 
 const queryClient = new QueryClient();
