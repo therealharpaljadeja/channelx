@@ -12,12 +12,25 @@ export default function JoinedChannels() {
 
     if (!context) return null;
 
-    const { userjoinedChannels } = context;
+    const {
+        userjoinedChannels,
+        streamedUntilUpdatedAts,
+        updatedAtTimestamps,
+        currentFlowRates,
+    } = context;
 
     return (
         <Screen>
             <ScreenTitle>Joined Channels</ScreenTitle>
-            <ScreenTotal />
+            {streamedUntilUpdatedAts &&
+                updatedAtTimestamps &&
+                currentFlowRates && (
+                    <ScreenTotal
+                        streamedUntilUpdatedAts={streamedUntilUpdatedAts}
+                        updatedAtTimestamps={updatedAtTimestamps}
+                        currentFlowRates={currentFlowRates}
+                    />
+                )}
             {userjoinedChannels && <ScreenList items={userjoinedChannels} />}
         </Screen>
     );

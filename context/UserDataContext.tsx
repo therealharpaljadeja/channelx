@@ -46,7 +46,6 @@ export function UserDataProvider({ children }: { children: ReactNode }) {
             let allChannelsFidOwns = await fetchAllChannelsOwnedByAnFid(fid);
 
             setUserOwnedChannels(allChannelsFidOwns);
-            setLoading(false);
         }
 
         async function getUserJoinedChannels(fid: number) {
@@ -118,14 +117,19 @@ export function UserDataProvider({ children }: { children: ReactNode }) {
             }
         }
 
-        if (authenticated) {
-            if (user && user.farcaster && user.farcaster.fid) {
-                const fid = user.farcaster.fid;
-                getChannels(fid);
-                // getUserJoinedChannels(user.farcaster.fid);
-                getUserJoinedChannels(399712);
+        async function init() {
+            if (authenticated) {
+                if (user && user.farcaster && user.farcaster.fid) {
+                    const fid = user.farcaster.fid;
+                    await getChannels(fid);
+                    await getUserJoinedChannels(user.farcaster.fid);
+                    setLoading(false);
+                    // getUserJoinedChannels(399712);
+                }
             }
         }
+
+        init();
     }, [authenticated]);
 
     return (

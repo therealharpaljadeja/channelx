@@ -5,7 +5,11 @@ import { PrivyProvider } from "@privy-io/react-auth";
 import theme from "@/theme";
 import { UserDataProvider } from "@/context/UserDataContext";
 import "@rainbow-me/rainbowkit/styles.css";
-import { getDefaultConfig, RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import {
+    getDefaultConfig,
+    lightTheme,
+    RainbowKitProvider,
+} from "@rainbow-me/rainbowkit";
 import { WagmiProvider } from "wagmi";
 import { base } from "wagmi/chains";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
@@ -37,7 +41,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
             <ChakraProvider theme={theme}>
                 <WagmiProvider config={config}>
                     <QueryClientProvider client={queryClient}>
-                        <RainbowKitProvider>
+                        <RainbowKitProvider
+                            theme={lightTheme({
+                                accentColor: "#8A63D2",
+                            })}
+                        >
                             <UserDataProvider>{children}</UserDataProvider>
                         </RainbowKitProvider>
                     </QueryClientProvider>

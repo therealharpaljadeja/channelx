@@ -8,7 +8,7 @@ import { usePrivy } from "@privy-io/react-auth";
 import { useRouter } from "next/navigation";
 import { ReactNode, useContext } from "react";
 
-function LoadingState() {
+export function LoadingState() {
     return (
         <Screen>
             <Skeleton width="200px" height="40px" />

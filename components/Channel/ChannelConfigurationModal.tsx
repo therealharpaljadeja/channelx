@@ -14,6 +14,7 @@ import {
 } from "@chakra-ui/react";
 import { createClient } from "@vercel/kv";
 import { useState } from "react";
+import { MdInfo } from "react-icons/md";
 
 const kv = createClient({
     url: process.env.NEXT_PUBLIC_KV_REST_API_URL as string,
@@ -44,7 +45,6 @@ export default function ChannelConfigurationModal({
         if (channel && threshold) {
             setLoading(true);
             try {
-                console.log("adasda");
                 await kv.set(channel.id, threshold);
                 toast({
                     title: "Threshold set",
@@ -54,7 +54,6 @@ export default function ChannelConfigurationModal({
                     position: "bottom",
                 });
             } catch (error) {
-                console.log(error);
                 toast({
                     title: "Something went wrong",
                     status: "error",
@@ -90,6 +89,13 @@ export default function ChannelConfigurationModal({
                                 onChange={handleThresholdChange}
                                 placeholder="5"
                             />
+                            <div className="flex space-x-2 items-center">
+                                <MdInfo className="text-gray-500" />
+                                <Text fontSize="sm" className="text-gray-500">
+                                    {Number(threshold) * 30} DEGENx income per
+                                    month
+                                </Text>
+                            </div>
                         </div>
                     </div>
                     <Button

@@ -26,10 +26,6 @@ const hostAddress = "0x4C073B3baB6d8826b8C5b229f3cfdC1eC6E47E74";
 const cfaV1Address = "0x19ba78B9cDB05A877718841c574325fdB53601bb";
 const cfaV1ForwarderAddress = "0xcfA132E353cB4E398080B9700609bb008eceB125";
 
-const provider = new ethers.providers.JsonRpcProvider(
-    "https://base.llamarpc.com"
-);
-
 const cfaV1 = new ConstantFlowAgreementV1(
     hostAddress,
     cfaV1Address,
@@ -99,12 +95,6 @@ export default function ChannelInfoModal({
                     receiver: channel?.lead.verified_addresses.eth_addresses[0],
                     flowRate: "115740740740740",
                 });
-
-                // const createFlowOperation = degenx.createFlow({
-                //     sender: address, // Replace with the sender's address
-                //     receiver: channel?.lead.verified_addresses.eth_addresses[0], // Replace with the receiver's address
-                //     flowRate: "115740740740740", // Replace with the desired flow rate
-                // });
 
                 const txnResponse = await createFlowOperation.exec(
                     await getEthersSigner(config)
@@ -179,7 +169,7 @@ export default function ChannelInfoModal({
                             <Text fontSize="sm">Stream Rate</Text>
                             <div className="flex justify-between items-center p-2">
                                 <Text fontSize="md" className="text-gray-700">
-                                    69 DEGENx/mo
+                                    10 DEGENx/day
                                 </Text>
                             </div>
                         </div>
