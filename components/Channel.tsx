@@ -1,3 +1,4 @@
+import { Channel } from "@/utils/api";
 import { Avatar, Flex, Text } from "@chakra-ui/react";
 
 export default function ListItem({ itemData }: { itemData: Channel }) {

@@ -24,7 +24,7 @@ import { MdOutlineModeEdit } from "react-icons/md";
 import { useAccount, useConfig, Config } from "wagmi";
 import { Account, Chain, Client, Transport, parseEther } from "viem";
 import { getConnectorClient } from "@wagmi/core";
-import { LoadingState } from "@/app/app/layout";
+import { LoadingState } from "@/components/LoadingState";
 
 const provider = new ethers.providers.JsonRpcProvider(
     "https://base.llamarpc.com"
