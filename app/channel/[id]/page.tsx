@@ -80,6 +80,7 @@ export default function ChannelDetailsPage() {
     const [isConnectedUserStreaming, setIsConnectedUserStreaming] =
         useState(false);
     const [channelOwner, setChannelOwner] = useState<string | null>(null);
+    const [isClient, setIsClient] = useState(false);
 
     // const {
     //     isOpen: isChannelInfoModalOpen,
@@ -94,6 +95,10 @@ export default function ChannelDetailsPage() {
     } = useDisclosure();
 
     const { authenticated, user } = usePrivy();
+
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
 
     useEffect(() => {
         async function isConnectedUserStreamingToChannelOwner() {
