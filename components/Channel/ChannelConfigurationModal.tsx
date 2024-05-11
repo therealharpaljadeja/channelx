@@ -47,12 +47,23 @@ export default function ChannelConfigurationModal({
             try {
                 await kv.set(channel.id, threshold);
                 toast({
-                    title: "Threshold set",
+                    title: "Threshold set.",
                     status: "success",
                     duration: 5000,
                     isClosable: true,
                     position: "bottom",
                 });
+                toast({
+                    title: "Just add @bot007 as a co-host and the bot will do the rest",
+                    status: "info",
+                    containerStyle: {
+                        width: "350px",
+                    },
+                    duration: 10000,
+                    isClosable: true,
+                    position: "bottom",
+                });
+                onClose();
             } catch (error) {
                 toast({
                     title: "Something went wrong",

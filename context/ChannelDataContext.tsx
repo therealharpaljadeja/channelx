@@ -5,9 +5,15 @@ import {
     fetchAllIncomingStreamsToAnAddress,
     getAddressesFromStreams,
 } from "@/utils/api";
+import { createClient } from "@vercel/kv";
 import axios from "axios";
 import { useParams } from "next/navigation";
 import React, { ReactNode, useEffect, useState } from "react";
+
+const kv = createClient({
+    url: process.env.NEXT_PUBLIC_KV_REST_API_URL as string,
+    token: process.env.NEXT_PUBLIC_KV_REST_API_TOKEN as string,
+});
 
 type ContextReturnType = {
     channel: Channel | null;
@@ -62,6 +68,10 @@ export function ChannelDataProvider({ children }: { children: ReactNode }) {
                 let { cfaStreams } = await fetchAllIncomingStreamsToAnAddress(
                     channelDetails.lead.verified_addresses.eth_addresses[0]
                 );
+
+                let threshold = (await kv.get(channelDetails.id)) as string;
+
+                channelDetails.threshold = threshold;
 
                 let addressesStreamingToChannelOwner =
                     await getAddressesFromStreams(cfaStreams);

@@ -31,6 +31,7 @@ export type Channel = {
     streamedUntilUpdatedAt?: string;
     updatedAtTimestamp?: string;
     currentFlowRate?: string;
+    threshold?: string;
 };
 
 export type cfaStream = {

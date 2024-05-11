@@ -1,7 +1,6 @@
 "use client";
 
 import ChannelConfigurationModal from "@/components/Channel/ChannelConfigurationModal";
-import ChannelInfoModal from "@/components/Channel/ChannelInfoModal";
 import Screen from "@/components/Screen";
 import ScreenList from "@/components/Screen/ScreenList";
 import ScreenTotal from "@/components/Screen/ScreenTotal";
@@ -23,7 +22,7 @@ import Link from "next/link";
 import { useContext, useEffect, useState } from "react";
 import { MdOutlineModeEdit } from "react-icons/md";
 import { useAccount, useConfig, Config } from "wagmi";
-import { Account, Chain, Client, Transport } from "viem";
+import { Account, Chain, Client, Transport, parseEther } from "viem";
 import { getConnectorClient } from "@wagmi/core";
 import { LoadingState } from "@/app/app/layout";
 
@@ -80,12 +79,13 @@ export default function ChannelDetailsPage() {
     const [loadingStartStream, setLoading] = useState(false);
     const [isConnectedUserStreaming, setIsConnectedUserStreaming] =
         useState(false);
+    const [channelOwner, setChannelOwner] = useState<string | null>(null);
 
-    const {
-        isOpen: isChannelInfoModalOpen,
-        onOpen: onChannelInfoModalOpen,
-        onClose: onChannelInfoModalClose,
-    } = useDisclosure();
+    // const {
+    //     isOpen: isChannelInfoModalOpen,
+    //     onOpen: onChannelInfoModalOpen,
+    //     onClose: onChannelInfoModalClose,
+    // } = useDisclosure();
 
     const {
         isOpen: isChannelConfigurationModalOpen,
@@ -108,16 +108,18 @@ export default function ChannelDetailsPage() {
 
                 // console.log(cfaStream);
 
+                let channelOwner =
+                    channel.lead.verified_addresses.eth_addresses[0];
+
                 let { cfaStreams } = await fetchAllOutgoingStreamsFromAnAddress(
-                    "0xaB8a67743325347Aa53bCC66850f8F13df87e3AF".toLowerCase()
-                    // address.toLowerCase()
+                    // "0xaB8a67743325347Aa53bCC66850f8F13df87e3AF".toLowerCase()
+                    address.toLowerCase()
                 );
 
                 let cfaStream = cfaStreams.filter((stream: cfaStream) => {
                     return (
                         stream.receiver &&
-                        stream.receiver.id ===
-                            channel.lead.verified_addresses.eth_addresses[0].toLowerCase() &&
+                        stream.receiver.id === channelOwner.toLowerCase() &&
                         Number(stream.currentFlowRate) > 0
                     );
                 });
@@ -126,7 +128,9 @@ export default function ChannelDetailsPage() {
 
                 if (cfaStream) {
                     let amountStreamedToUser =
-                        BigInt("10000000000000000000") -
+                        BigInt(
+                            parseEther((channel.threshold as string).toString())
+                        ) -
                         (BigInt(cfaStream.currentFlowRate) *
                             BigInt(
                                 Date.now() - cfaStream.updatedAtTimestamp * 1000
@@ -142,6 +146,8 @@ export default function ChannelDetailsPage() {
                 } else {
                     setIsConnectedUserStreaming(false);
                 }
+
+                setChannelOwner(channelOwner);
             }
         }
 
@@ -161,17 +167,24 @@ export default function ChannelDetailsPage() {
     async function startStream() {
         setLoading(true);
         try {
-            if (channel?.lead.verified_addresses.eth_addresses) {
+            if (channelOwner && channel) {
+                console.log(channel.threshold);
                 const createFlowOperation = await cfaV1.createFlow({
                     superToken: "0x1efF3Dd78F4A14aBfa9Fa66579bD3Ce9E1B30529",
                     sender: address,
-                    receiver: channel?.lead.verified_addresses.eth_addresses[0],
-                    flowRate: "115740740740740",
+                    receiver: channelOwner,
+                    flowRate: (
+                        parseEther((channel.threshold as string).toString()) /
+                        BigInt(24 * 60 * 60)
+                    ).toString(),
                 });
+
+                console.log(createFlowOperation);
 
                 const txnResponse = await createFlowOperation.exec(
                     await getEthersSigner(config)
                 );
+
                 const txnReceipt = await txnResponse.wait();
 
                 console.log(txnReceipt);
@@ -240,70 +253,99 @@ export default function ChannelDetailsPage() {
                         </div>
                     </div>
                 )}
-                {isConnected ? (
-                    isConnectedUserStreaming ? (
-                        unlockTime ? (
-                            <>
-                                <div className="flex flex-col w-full h-full flex-1 justify-center">
-                                    <div className="flex flex-col items-center bg-[url('/pattern.svg')] space-y-4 p-4">
-                                        <img src="/lock.svg" />
+                {authenticated ? (
+                    <>
+                        {streamedUntilUpdatedAts &&
+                            updatedAtTimestamps &&
+                            currentFlowRates && (
+                                <ScreenTotal
+                                    streamedUntilUpdatedAts={
+                                        streamedUntilUpdatedAts
+                                    }
+                                    updatedAtTimestamps={updatedAtTimestamps}
+                                    currentFlowRates={currentFlowRates}
+                                />
+                            )}
+                        {subscribedUsers && (
+                            <ScreenList items={subscribedUsers} />
+                        )}
+                    </>
+                ) : (
+                    <>
+                        {isConnected ? (
+                            isConnectedUserStreaming ? (
+                                unlockTime ? (
+                                    <>
+                                        <div className="flex flex-col w-full h-full flex-1 justify-center">
+                                            <div className="flex flex-col items-center bg-[url('/pattern.svg')] space-y-4 p-4">
+                                                <img src="/lock.svg" />
 
-                                        <p>Casting Unlocks in</p>
-                                        <Heading size="md" colorScheme="purple">
-                                            {unlockTime}
-                                        </Heading>
-                                        <Link
-                                            href={`https://warpcast.com/~/channel/${channel?.id}`}
-                                            target="_blank"
+                                                <p>Casting Unlocks in</p>
+                                                <Heading
+                                                    size="md"
+                                                    colorScheme="purple"
+                                                >
+                                                    {unlockTime}
+                                                </Heading>
+                                                <Link
+                                                    href={`https://warpcast.com/~/channel/${channel?.id}`}
+                                                    target="_blank"
+                                                >
+                                                    <Button colorScheme="purple">
+                                                        View Channel
+                                                    </Button>
+                                                </Link>
+                                            </div>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <>
+                                        {streamedUntilUpdatedAts &&
+                                            updatedAtTimestamps &&
+                                            currentFlowRates && (
+                                                <ScreenTotal
+                                                    streamedUntilUpdatedAts={
+                                                        streamedUntilUpdatedAts
+                                                    }
+                                                    updatedAtTimestamps={
+                                                        updatedAtTimestamps
+                                                    }
+                                                    currentFlowRates={
+                                                        currentFlowRates
+                                                    }
+                                                />
+                                            )}
+                                        {subscribedUsers && (
+                                            <ScreenList
+                                                items={subscribedUsers}
+                                            />
+                                        )}
+                                    </>
+                                )
+                            ) : (
+                                <div className="flex flex-col w-full h-full flex-1 justify-center">
+                                    <div className="flex flex-col h-full items-center bg-[url('/slide.svg'),_url('/pattern.svg')] bg-[length:100%_100%] bg-[position:10px_-25px] p-4">
+                                        <img src="/token.svg" />
+                                        <Button
+                                            onClick={startStream}
+                                            isLoading={loadingStartStream}
+                                            colorScheme="purple"
                                         >
-                                            <Button colorScheme="purple">
-                                                View Channel
-                                            </Button>
-                                        </Link>
+                                            Stream {channel?.threshold}{" "}
+                                            DEGENx/day
+                                        </Button>
                                     </div>
                                 </div>
-                            </>
+                            )
                         ) : (
-                            <>
-                                {streamedUntilUpdatedAts &&
-                                    updatedAtTimestamps &&
-                                    currentFlowRates && (
-                                        <ScreenTotal
-                                            streamedUntilUpdatedAts={
-                                                streamedUntilUpdatedAts
-                                            }
-                                            updatedAtTimestamps={
-                                                updatedAtTimestamps
-                                            }
-                                            currentFlowRates={currentFlowRates}
-                                        />
-                                    )}
-                                {subscribedUsers && (
-                                    <ScreenList items={subscribedUsers} />
-                                )}
-                            </>
-                        )
-                    ) : (
-                        <div className="flex flex-col w-full h-full flex-1 justify-center">
-                            <div className="flex flex-col h-full items-center bg-[url('/slide.svg'),_url('/pattern.svg')] bg-[length:100%_100%] bg-[position:10px_-25px] p-4">
-                                <img src="/token.svg" />
-                                <Button
-                                    onClick={startStream}
-                                    isLoading={loadingStartStream}
-                                    colorScheme="purple"
-                                >
-                                    Stream 10 DEGENx/day
-                                </Button>
+                            <div className="flex flex-col w-full h-full flex-1 justify-center">
+                                <div className="flex flex-col h-full items-center bg-[url('/slide.svg'),_url('/pattern.svg')]  bg-[length:100%_100%] bg-[position:10px_-25px] p-4">
+                                    <img src="/token.svg" />
+                                    <ConnectButton />
+                                </div>
                             </div>
-                        </div>
-                    )
-                ) : (
-                    <div className="flex flex-col w-full h-full flex-1 justify-center">
-                        <div className="flex flex-col h-full items-center bg-[url('/slide.svg'),_url('/pattern.svg')]  bg-[length:100%_100%] bg-[position:10px_-25px] p-4">
-                            <img src="/token.svg" />
-                            <ConnectButton />
-                        </div>
-                    </div>
+                        )}
+                    </>
                 )}
             </Screen>
         </>
