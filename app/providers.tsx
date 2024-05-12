@@ -52,7 +52,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
                 appearance: {
                     theme: "light",
                     accentColor: "#676FFF",
-                    logo: "https://your-logo-url",
+                    logo: "/lock.svg",
                 },
                 loginMethods: ["farcaster"],
                 // Create embedded wallets for users who don't have a wallet

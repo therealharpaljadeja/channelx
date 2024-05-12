@@ -20,22 +20,20 @@ import { ConstantFlowAgreementV1 } from "@superfluid-finance/sdk-core";
 import { ethers } from "ethers";
 import Link from "next/link";
 import { useContext, useEffect, useState } from "react";
-import { MdOutlineModeEdit } from "react-icons/md";
+import { MdOutlineModeEdit, MdStop } from "react-icons/md";
 import { useAccount, useConfig, Config } from "wagmi";
 import { Account, Chain, Client, Transport, parseEther } from "viem";
 import { getConnectorClient } from "@wagmi/core";
 import { LoadingState } from "@/components/LoadingState";
 import { useRouter } from "next/navigation";
 
-const provider = new ethers.providers.JsonRpcProvider(
-    "https://base.llamarpc.com"
-);
-
 const cfaV1 = new ConstantFlowAgreementV1(
     "0x4C073B3baB6d8826b8C5b229f3cfdC1eC6E47E74",
     "0x4C073B3baB6d8826b8C5b229f3cfdC1eC6E47E74",
     "0xcfA132E353cB4E398080B9700609bb008eceB125"
 );
+
+const DEGENx = "0x1efF3Dd78F4A14aBfa9Fa66579bD3Ce9E1B30529";
 
 function clientToSigner(client: Client<Transport, Chain, Account>) {
     const { account, chain, transport } = client;
@@ -105,16 +103,6 @@ export default function ChannelDetailsPage() {
     useEffect(() => {
         async function isConnectedUserStreamingToChannelOwner() {
             if (isConnected && address && channel) {
-                // let cfaStream = await cfaV1.getFlow({
-                //     sender: "0xaB8a67743325347Aa53bCC66850f8F13df87e3AF".toLowerCase(),
-                //     receiver:
-                //         channel.lead.verified_addresses.eth_addresses[0].toLowerCase(),
-                //     superToken: "0x1efF3Dd78F4A14aBfa9Fa66579bD3Ce9E1B30529",
-                //     providerOrSigner: provider,
-                // });
-
-                // console.log(cfaStream);
-
                 let channelOwner =
                     channel.lead.verified_addresses.eth_addresses[0];
 
@@ -175,9 +163,8 @@ export default function ChannelDetailsPage() {
         setLoading(true);
         try {
             if (channelOwner && channel) {
-                console.log(channel.threshold);
                 const createFlowOperation = await cfaV1.createFlow({
-                    superToken: "0x1efF3Dd78F4A14aBfa9Fa66579bD3Ce9E1B30529",
+                    superToken: DEGENx,
                     sender: address,
                     receiver: channelOwner,
                     flowRate: (
@@ -186,13 +173,40 @@ export default function ChannelDetailsPage() {
                     ).toString(),
                 });
 
-                console.log(createFlowOperation);
-
                 const txnResponse = await createFlowOperation.exec(
                     await getEthersSigner(config)
                 );
 
                 const txnReceipt = await txnResponse.wait();
+
+                console.log(txnReceipt);
+
+                router.refresh();
+            }
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    async function deleteFlow() {
+        setLoading(true);
+        try {
+            if (channelOwner && channel && isConnected && address) {
+                let deleteFlowOperation = cfaV1.deleteFlow({
+                    sender: address,
+                    receiver: channelOwner,
+                    superToken: DEGENx,
+                });
+
+                const txnResponse = await deleteFlowOperation.exec(
+                    await getEthersSigner(config)
+                );
+
+                const txnReceipt = await txnResponse.wait();
+
+                console.log(txnReceipt);
 
                 router.refresh();
             }
@@ -251,12 +265,15 @@ export default function ChannelDetailsPage() {
                                     icon={<MdOutlineModeEdit />}
                                 />
                             ) : null}
-                            {/* <IconButton
-                                colorScheme="purple"
-                                aria-label="Channel Info"
-                                onClick={onChannelInfoModalOpen}
-                                icon={<MdInfo />}
-                            /> */}
+
+                            {isConnectedUserStreaming && (
+                                <IconButton
+                                    colorScheme="purple"
+                                    aria-label="Stop Stream"
+                                    onClick={deleteFlow}
+                                    icon={<MdStop />}
+                                />
+                            )}
                         </div>
                     </div>
                 )}
@@ -287,7 +304,7 @@ export default function ChannelDetailsPage() {
                             <>
                                 <div className="flex flex-col w-full h-full flex-1 justify-center">
                                     <div className="flex flex-col items-center bg-[url('/pattern.svg')] space-y-4 p-4">
-                                        <img src="/lock.svg" />
+                                        <img src="/channel-lock.svg" />
 
                                         <p>Casting Unlocks in</p>
                                         <Heading size="md" colorScheme="purple">

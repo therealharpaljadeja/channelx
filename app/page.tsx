@@ -13,13 +13,19 @@ export default function Login() {
     if (authenticated) return router.push("/app");
 
     return (
-        <Button
-            colorScheme="purple"
-            color="white"
-            onClick={login}
-            leftIcon={<img className="h-4 w-4" src="/farcaster.svg" />}
-        >
-            Sign in with Farcaster
-        </Button>
+        <div className="flex flex-col space-y-8">
+            <div className="flex space-x-2 items-center justify-center">
+                <img src="/lock.svg" className="w-8" />
+                <img src="/degenx.svg" className="w-36 mt-4" />
+            </div>
+            <Button
+                colorScheme="purple"
+                color="white"
+                onClick={login}
+                leftIcon={<img className="h-4 w-4" src="/farcaster.svg" />}
+            >
+                Sign in with Farcaster
+            </Button>
+        </div>
     );
 }
