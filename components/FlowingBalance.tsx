@@ -16,6 +16,8 @@ export function toFixedUsingString(
 ): string {
     const [wholePart, decimalPart] = numStr.split(".");
 
+    // console.log("WholePart", wholePart, decimalPart);
+
     if (!decimalPart || decimalPart.length <= decimalPlaces) {
         // padEnd(targetLength, padString)
         return numStr.padEnd(wholePart.length + 1 + decimalPlaces, "0");
@@ -23,16 +25,11 @@ export function toFixedUsingString(
 
     // Rounding up if the number after decimalPlaces length is greater than 5
     // 5.04924379 = 5.049244
+    const decimalPartBigInt = `${decimalPart.slice(0, decimalPlaces)}${
+        decimalPart[decimalPlaces] >= "5" ? "1" : "0"
+    }`;
 
-    const decimalPartBigInt = BigInt(
-        `${decimalPart.slice(0, decimalPlaces)}${
-            decimalPart[decimalPlaces] >= "5" ? "1" : "0"
-        }`
-    );
-
-    return `${wholePart}.${decimalPartBigInt
-        .toString()
-        .padStart(decimalPlaces, "0")}`;
+    return `${wholePart}.${decimalPartBigInt.padStart(decimalPlaces, "0")}`;
 }
 
 // Hooks
@@ -173,6 +170,8 @@ const FlowingBalance: React.FC<{
         effectiveFlowRate,
         ANIMATION_MINIMUM_STEP_TIME
     );
+
+    console.log(formatEther(flowingBalance));
 
     return (
         <Heading className="flowing-balance" size={size}>
