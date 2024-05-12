@@ -258,7 +258,11 @@ export default function ChannelDetailsPage() {
                         </div>
                     </div>
                 )}
-                {authenticated ? (
+
+                {authenticated &&
+                channel &&
+                user &&
+                channel.lead.fid === user.farcaster?.fid ? (
                     <>
                         {streamedUntilUpdatedAts &&
                             updatedAtTimestamps &&
@@ -275,82 +279,70 @@ export default function ChannelDetailsPage() {
                             <ScreenList items={subscribedUsers} />
                         )}
                     </>
-                ) : (
-                    <>
-                        {isConnected ? (
-                            isConnectedUserStreaming ? (
-                                unlockTime ? (
-                                    <>
-                                        <div className="flex flex-col w-full h-full flex-1 justify-center">
-                                            <div className="flex flex-col items-center bg-[url('/pattern.svg')] space-y-4 p-4">
-                                                <img src="/lock.svg" />
-
-                                                <p>Casting Unlocks in</p>
-                                                <Heading
-                                                    size="md"
-                                                    colorScheme="purple"
-                                                >
-                                                    {unlockTime}
-                                                </Heading>
-                                                <Link
-                                                    href={`https://warpcast.com/~/channel/${channel?.id}`}
-                                                    target="_blank"
-                                                >
-                                                    <Button colorScheme="purple">
-                                                        View Channel
-                                                    </Button>
-                                                </Link>
-                                            </div>
-                                        </div>
-                                    </>
-                                ) : (
-                                    <>
-                                        {streamedUntilUpdatedAts &&
-                                            updatedAtTimestamps &&
-                                            currentFlowRates && (
-                                                <ScreenTotal
-                                                    streamedUntilUpdatedAts={
-                                                        streamedUntilUpdatedAts
-                                                    }
-                                                    updatedAtTimestamps={
-                                                        updatedAtTimestamps
-                                                    }
-                                                    currentFlowRates={
-                                                        currentFlowRates
-                                                    }
-                                                />
-                                            )}
-                                        {subscribedUsers && (
-                                            <ScreenList
-                                                items={subscribedUsers}
-                                            />
-                                        )}
-                                    </>
-                                )
-                            ) : (
+                ) : isConnected ? (
+                    isConnectedUserStreaming ? (
+                        unlockTime ? (
+                            <>
                                 <div className="flex flex-col w-full h-full flex-1 justify-center">
-                                    <div className="flex flex-col h-full items-center bg-[url('/slide.svg'),_url('/pattern.svg')] bg-[length:100%_100%] bg-[position:10px_-25px] p-4">
-                                        <img src="/token.svg" />
-                                        <Button
-                                            onClick={startStream}
-                                            isLoading={loadingStartStream}
-                                            colorScheme="purple"
+                                    <div className="flex flex-col items-center bg-[url('/pattern.svg')] space-y-4 p-4">
+                                        <img src="/lock.svg" />
+
+                                        <p>Casting Unlocks in</p>
+                                        <Heading size="md" colorScheme="purple">
+                                            {unlockTime}
+                                        </Heading>
+                                        <Link
+                                            href={`https://warpcast.com/~/channel/${channel?.id}`}
+                                            target="_blank"
                                         >
-                                            Stream {channel?.threshold}{" "}
-                                            DEGENx/day
-                                        </Button>
+                                            <Button colorScheme="purple">
+                                                View Channel
+                                            </Button>
+                                        </Link>
                                     </div>
                                 </div>
-                            )
+                            </>
                         ) : (
-                            <div className="flex flex-col w-full h-full flex-1 justify-center">
-                                <div className="flex flex-col h-full items-center bg-[url('/slide.svg'),_url('/pattern.svg')]  bg-[length:100%_100%] bg-[position:10px_-25px] p-4">
-                                    <img src="/token.svg" />
-                                    <ConnectButton />
-                                </div>
+                            <>
+                                {streamedUntilUpdatedAts &&
+                                    updatedAtTimestamps &&
+                                    currentFlowRates && (
+                                        <ScreenTotal
+                                            streamedUntilUpdatedAts={
+                                                streamedUntilUpdatedAts
+                                            }
+                                            updatedAtTimestamps={
+                                                updatedAtTimestamps
+                                            }
+                                            currentFlowRates={currentFlowRates}
+                                        />
+                                    )}
+                                {subscribedUsers && (
+                                    <ScreenList items={subscribedUsers} />
+                                )}
+                            </>
+                        )
+                    ) : (
+                        <div className="flex flex-col w-full h-full flex-1 justify-center">
+                            <div className="flex flex-col h-full items-center bg-[url('/slide.svg'),_url('/pattern.svg')] bg-[length:100%_100%] bg-[position:10px_-25px] p-4">
+                                <img src="/token.svg" />
+                                <Button
+                                    onClick={startStream}
+                                    isLoading={loadingStartStream}
+                                    colorScheme="purple"
+                                >
+                                    Stream {channel?.threshold} DEGENx/day
+                                </Button>
                             </div>
-                        )}
-                    </>
+                        </div>
+                    )
+                ) : (
+                    <div className="flex flex-col w-full h-full flex-1 justify-center">
+                        <div className="flex flex-col h-full items-center bg-[url('/slide.svg'),_url('/pattern.svg')]  bg-[length:100%_100%] bg-[position:10px_-25px] p-4">
+                            <img src="/token.svg" />
+                            <ConnectButton />
+                        </div>
+                    </div>
                 )}
             </Screen>
         </>
