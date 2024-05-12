@@ -268,7 +268,7 @@ export default function ChannelDetailsPage() {
 
                             {isConnectedUserStreaming && (
                                 <IconButton
-                                    colorScheme="purple"
+                                    colorScheme="red"
                                     aria-label="Stop Stream"
                                     onClick={deleteFlow}
                                     icon={<MdStop />}
