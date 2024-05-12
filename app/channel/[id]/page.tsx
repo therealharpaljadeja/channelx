@@ -25,6 +25,7 @@ import { useAccount, useConfig, Config } from "wagmi";
 import { Account, Chain, Client, Transport, parseEther } from "viem";
 import { getConnectorClient } from "@wagmi/core";
 import { LoadingState } from "@/components/LoadingState";
+import { useRouter } from "next/navigation";
 
 const provider = new ethers.providers.JsonRpcProvider(
     "https://base.llamarpc.com"
@@ -75,6 +76,7 @@ export default function ChannelDetailsPage() {
     const context = useContext(ChannelDataContext);
     const { isConnected, address } = useAccount();
     const config = useConfig();
+    const router = useRouter();
     const [unlockTime, setUnlockTime] = useState<string | null>(null);
     const [loadingStartStream, setLoading] = useState(false);
     const [isConnectedUserStreaming, setIsConnectedUserStreaming] =
@@ -192,7 +194,7 @@ export default function ChannelDetailsPage() {
 
                 const txnReceipt = await txnResponse.wait();
 
-                console.log(txnReceipt);
+                router.refresh();
             }
         } catch (error) {
             console.log(error);
