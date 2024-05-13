@@ -16,7 +16,7 @@ export default function Login() {
         <div className="flex flex-col space-y-8">
             <div className="flex space-x-2 items-center justify-center">
                 <img src="/lock.svg" className="w-8" />
-                <img src="/DegenX.svg" className="w-36 mt-4" />
+                <img src="/ChannelX.svg" className="w-36" />
             </div>
             <Button
                 colorScheme="purple"
