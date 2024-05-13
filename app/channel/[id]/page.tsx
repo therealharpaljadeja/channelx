@@ -71,10 +71,10 @@ function formatTime(seconds: number) {
 }
 
 export default function ChannelDetailsPage() {
+    const router = useRouter();
     const context = useContext(ChannelDataContext);
     const { isConnected, address } = useAccount();
     const config = useConfig();
-    const router = useRouter();
     const [unlockTime, setUnlockTime] = useState<string | null>(null);
     const [loadingStartStream, setLoading] = useState(false);
     const [isConnectedUserStreaming, setIsConnectedUserStreaming] =
@@ -147,7 +147,7 @@ export default function ChannelDetailsPage() {
         }
 
         isConnectedUserStreamingToChannelOwner();
-    }, [isConnected, address, context]);
+    }, [isConnected, user, address, context]);
 
     if (!context) return null;
 
