@@ -13,6 +13,7 @@ import {
     useToast,
 } from "@chakra-ui/react";
 import { createClient } from "@vercel/kv";
+import axios from "axios";
 import { useState } from "react";
 import { MdInfo } from "react-icons/md";
 
@@ -41,11 +42,43 @@ export default function ChannelConfigurationModal({
         setThreshold(threshold);
     }
 
+    async function createChannelWebhook(channelId: string, channelUrl: string) {
+        console.log(process.env.NEXT_PUBLIC_NEYNAR_API_KEY);
+        let response = await axios.post(
+            "https://api.neynar.com/v2/farcaster/webhook",
+            {
+                name: channelId,
+                url: "https://cast-hide-2.vercel.app/api/cast",
+                subscription: {
+                    "cast.created": { root_parent_urls: [channelUrl] },
+                },
+            },
+            {
+                headers: {
+                    Accept: "application/json",
+                    api_key: process.env.NEXT_PUBLIC_NEYNAR_API_KEY,
+                },
+            }
+        );
+
+        console.log(response);
+    }
+
     async function setChannelThreshold() {
         if (channel && threshold) {
             setLoading(true);
             try {
+                let channelExists = await kv.get(channel.id);
+
+                console.log("ChannelExists", channelExists);
+
+                if (!channelExists) {
+                    // Create webhook for channel because is not being tracked
+                    await createChannelWebhook(channel.id, channel.parent_url);
+                }
+
                 await kv.set(channel.id, threshold);
+
                 toast({
                     title: "Threshold set.",
                     status: "success",

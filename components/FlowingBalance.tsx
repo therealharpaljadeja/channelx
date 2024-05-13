@@ -16,8 +16,6 @@ export function toFixedUsingString(
 ): string {
     const [wholePart, decimalPart] = numStr.split(".");
 
-    // console.log("WholePart", wholePart, decimalPart);
-
     if (!decimalPart || decimalPart.length <= decimalPlaces) {
         // padEnd(targetLength, padString)
         return numStr.padEnd(wholePart.length + 1 + decimalPlaces, "0");
@@ -170,8 +168,6 @@ const FlowingBalance: React.FC<{
         effectiveFlowRate,
         ANIMATION_MINIMUM_STEP_TIME
     );
-
-    console.log(formatEther(flowingBalance));
 
     return (
         <Heading className="flowing-balance" size={size}>

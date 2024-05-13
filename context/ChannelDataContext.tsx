@@ -76,46 +76,48 @@ export function ChannelDataProvider({ children }: { children: ReactNode }) {
                 let addressesStreamingToChannelOwner =
                     await getAddressesFromStreams(cfaStreams);
 
-                let subscribedUsersData =
-                    await fetchAllFarcasterUsersFromAddresses(
-                        addressesStreamingToChannelOwner
-                    );
+                if (addressesStreamingToChannelOwner.length) {
+                    let subscribedUsersData =
+                        await fetchAllFarcasterUsersFromAddresses(
+                            addressesStreamingToChannelOwner
+                        );
 
-                let subscribedUsers: User[] = [];
-                let streamedUntilUpdatedAts = [];
-                let updatedAtTimestamps = [];
-                let currentFlowRates = [];
+                    let subscribedUsers: User[] = [];
+                    let streamedUntilUpdatedAts = [];
+                    let updatedAtTimestamps = [];
+                    let currentFlowRates = [];
 
-                for (const address in subscribedUsersData) {
-                    let user = subscribedUsersData[address][0];
+                    for (const address in subscribedUsersData) {
+                        let user = subscribedUsersData[address][0];
 
-                    for (let i = 0; i < cfaStreams.length; i++) {
-                        if (cfaStreams[i].sender) {
-                            if (address === cfaStreams[i].sender?.id) {
-                                user.streamedUntilUpdatedAt =
-                                    cfaStreams[i].streamedUntilUpdatedAt;
-                                user.updatedAtTimestamp =
-                                    cfaStreams[i].updatedAtTimestamp;
-                                user.currentFlowRate =
-                                    cfaStreams[i].currentFlowRate;
+                        for (let i = 0; i < cfaStreams.length; i++) {
+                            if (cfaStreams[i].sender) {
+                                if (address === cfaStreams[i].sender?.id) {
+                                    user.streamedUntilUpdatedAt =
+                                        cfaStreams[i].streamedUntilUpdatedAt;
+                                    user.updatedAtTimestamp =
+                                        cfaStreams[i].updatedAtTimestamp;
+                                    user.currentFlowRate =
+                                        cfaStreams[i].currentFlowRate;
 
-                                streamedUntilUpdatedAts.push(
-                                    cfaStreams[i].streamedUntilUpdatedAt
-                                );
-                                updatedAtTimestamps.push(
-                                    cfaStreams[i].updatedAtTimestamp
-                                );
-                                currentFlowRates.push(
-                                    cfaStreams[i].currentFlowRate
-                                );
+                                    streamedUntilUpdatedAts.push(
+                                        cfaStreams[i].streamedUntilUpdatedAt
+                                    );
+                                    updatedAtTimestamps.push(
+                                        cfaStreams[i].updatedAtTimestamp
+                                    );
+                                    currentFlowRates.push(
+                                        cfaStreams[i].currentFlowRate
+                                    );
+                                }
                             }
                         }
-                    }
 
-                    subscribedUsers = [...subscribedUsers, user];
-                    setCurrentFlowRates(currentFlowRates);
-                    setStreamedUntilUpdatedAts(streamedUntilUpdatedAts);
-                    setUpdatedAtTimestamps(updatedAtTimestamps);
+                        subscribedUsers = [...subscribedUsers, user];
+                        setCurrentFlowRates(currentFlowRates);
+                        setStreamedUntilUpdatedAts(streamedUntilUpdatedAts);
+                        setUpdatedAtTimestamps(updatedAtTimestamps);
+                    }
                 }
 
                 setSubscribedUsers(subscribedUsers);
