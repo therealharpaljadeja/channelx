@@ -1,36 +1,27 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# ChannelX
 
-## Getting Started
+![banner](/public/Bannerx.png)
 
-First, run the development server:
+Farcaster Channel Gating using DEGENx Superfluid Streams.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Problem
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Channel Passes that allow casting can be expensive, not everyone can afford them and not everyone wants to keep them forever.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Solution
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+ChannelX allows a channel owner to gate casting on their channel using DEGENx SuperFluid streams, the user who wants to cast can start a DEGENx stream and after a certain threshold amount has been streamed the user will be allowed to cast in the channel!
 
-## Learn More
+## How it works
 
-To learn more about Next.js, take a look at the following resources:
+-   Sign in with Farcaster on the [app](https://channelx.vercel.app)
+-   Select the channel you want to configure and set the DEGENx threshold after which the user will be allowed to cast.
+-   Once done, add @bot007 as a co-host to your channel, that's it!
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Tech Stack
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+-   Neynar APIs
+-   SuperFluid
+-   Warpcast Channel APIs
+-   Next.js
+-   Node
