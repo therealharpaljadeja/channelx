@@ -47,24 +47,55 @@ export type cfaStream = {
 };
 
 export async function fetchAllChannelsOwnedByAnFid(fid: number) {
-    let response = await axios.get(
-        `https://api.neynar.com/v2/farcaster/user/channels?fid=${fid}&limit=50`,
-        {
-            headers: {
-                Accept: "application/json",
-                api_key: process.env.NEXT_PUBLIC_NEYNAR_API_KEY,
-            },
-        }
-    );
+    let allChannelsUserFollows = [];
+    let nextCursor = "";
+    let i = 0;
 
-    let { channels: allChannelsUserFollows } = response.data;
+    while (true) {
+        let response = {} as any;
+        console.log(i);
+        if (i == 0) {
+            response = await axios.get(
+                `https://api.neynar.com/v2/farcaster/user/channels?fid=${fid}&limit=100`,
+                {
+                    headers: {
+                        Accept: "application/json",
+                        api_key: process.env.NEXT_PUBLIC_NEYNAR_API_KEY,
+                    },
+                }
+            );
+            i++;
+        } else {
+            console.log(i);
+
+            if (nextCursor != null) {
+                response = await axios.get(
+                    `https://api.neynar.com/v2/farcaster/user/channels?fid=${fid}&limit=100&cursor=${nextCursor}`,
+                    {
+                        headers: {
+                            Accept: "application/json",
+                            api_key: process.env.NEXT_PUBLIC_NEYNAR_API_KEY,
+                        },
+                    }
+                );
+            } else {
+                break;
+            }
+        }
+
+        let { channels: someChannelsUserFollows } = response.data;
+        nextCursor = response.data.next.cursor;
+        allChannelsUserFollows.push(...someChannelsUserFollows);
+    }
 
     const userOwnedChannels = [];
 
     if (allChannelsUserFollows) {
         for (let i = 0; i < allChannelsUserFollows.length; i++) {
-            if (allChannelsUserFollows[i].lead.fid == fid)
-                userOwnedChannels.push(allChannelsUserFollows[i]);
+            for (let j = 0; j < allChannelsUserFollows[i].hosts.length; j++) {
+                if (allChannelsUserFollows[i].hosts[j].fid == fid)
+                    userOwnedChannels.push(allChannelsUserFollows[i]);
+            }
         }
     }
 
