@@ -1,7 +1,7 @@
 "use client";
 
 import { usePrivy } from "@privy-io/react-auth";
-import { Button, Skeleton } from "@chakra-ui/react";
+import { Button, Skeleton, Text } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 
 export default function Login() {
@@ -31,6 +31,7 @@ export default function Login() {
                 <div className="flex space-x-2 mt-36 items-center justify-center">
                     <img src="/ChannelX-logo.svg" className="w-36" />
                 </div>
+                <Text color={"white"}>Gate channel using DEGENx stream</Text>
                 <Button
                     colorScheme="purple"
                     color="white"
