@@ -344,7 +344,7 @@ export default function ChannelDetailsPage() {
                         )
                     ) : (
                         <div className="flex flex-col w-full h-full flex-1 justify-center">
-                            <div className="flex flex-col h-full items-center  bg-[position:10px_-25px] p-4">
+                            <div className="flex flex-col h-full items-center bg-[url('/slide.svg'),_url('/pattern.svg')]  bg-[length:100%_100%] bg-[position:10px_-25px] p-4">
                                 <img src="/Token.png" />
                                 <Button
                                     onClick={startStream}
