@@ -32,7 +32,7 @@ export default function TopBar() {
                             Sign in with Farcaster
                         </Button>
                     )}
-                    <ConnectButton />
+                    {/* <ConnectButton /> */}
                 </div>
             ) : (
                 <Skeleton w="80px" h="25px" />

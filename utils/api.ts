@@ -29,6 +29,7 @@ export type Channel = {
     parent_url: string;
     image_url: string;
     id: string;
+    hosts?: { fid: number; username: string }[];
     streamedUntilUpdatedAt?: string;
     updatedAtTimestamp?: string;
     currentFlowRate?: string;

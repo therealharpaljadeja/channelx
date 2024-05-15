@@ -47,7 +47,7 @@ export default function BottomBar() {
                             }
                             size="xs"
                         >
-                            Channels Joined
+                            Channels Subscribed
                         </Heading>
                     </Link>
                 </div>

@@ -6,21 +6,13 @@ import ScreenList from "@/components/Screen/ScreenList";
 import ScreenTotal from "@/components/Screen/ScreenTotal";
 import ChannelDataContext from "@/context/ChannelDataContext";
 import { cfaStream, fetchAllOutgoingStreamsFromAnAddress } from "@/utils/api";
-import {
-    Button,
-    Heading,
-    IconButton,
-    Spacer,
-    Text,
-    useDisclosure,
-} from "@chakra-ui/react";
-import { usePrivy } from "@privy-io/react-auth";
+import { Button, Heading, Spacer, Text, useDisclosure } from "@chakra-ui/react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { ConstantFlowAgreementV1 } from "@superfluid-finance/sdk-core";
 import { ethers } from "ethers";
 import Link from "next/link";
 import { useContext, useEffect, useState } from "react";
-import { MdOutlineModeEdit, MdStop } from "react-icons/md";
+import { MdInfo } from "react-icons/md";
 import { useAccount, useConfig, Config } from "wagmi";
 import { Account, Chain, Client, Transport, parseEther } from "viem";
 import { getConnectorClient } from "@wagmi/core";
@@ -94,14 +86,13 @@ export default function ChannelDetailsPage() {
         onClose: onChannelConfigurationModalClose,
     } = useDisclosure();
 
-    const { authenticated, user } = usePrivy();
-
     useEffect(() => {
         setIsClient(true);
     }, []);
 
     useEffect(() => {
         async function isConnectedUserStreamingToChannelOwner() {
+            console.log(isConnected, address, channel);
             if (isConnected && address && channel) {
                 let channelOwner =
                     channel.lead.verified_addresses.eth_addresses[0];
@@ -143,6 +134,7 @@ export default function ChannelDetailsPage() {
                     );
 
                     setIsConnectedUserStreaming(true);
+                    console.log("unlockTime", unlockTime);
                     setUnlockTime(formatTime(timeAfterWhichCastingUnlocks));
                 } else {
                     setIsConnectedUserStreaming(false);
@@ -153,7 +145,7 @@ export default function ChannelDetailsPage() {
         }
 
         isConnectedUserStreamingToChannelOwner();
-    }, [isConnected, user, address, context]);
+    }, [isConnected, address, context]);
 
     if (!context) return null;
 
@@ -169,12 +161,14 @@ export default function ChannelDetailsPage() {
         setLoading(true);
         try {
             if (channelOwner && channel) {
+                console.log(channel.threshold);
                 const createFlowOperation = await cfaV1.createFlow({
                     superToken: DEGENx,
                     sender: address,
                     receiver: channelOwner,
                     flowRate: (
-                        parseEther((channel.threshold as string).toString()) /
+                        (parseEther(channel.threshold?.toString() as string) *
+                            BigInt(4)) /
                         BigInt(24 * 60 * 60)
                     ).toString(),
                 });
@@ -234,6 +228,8 @@ export default function ChannelDetailsPage() {
 
     if (loading) return <LoadingState />;
 
+    console.log(unlockTime);
+
     return (
         <>
             {/* <ChannelInfoModal
@@ -243,6 +239,7 @@ export default function ChannelDetailsPage() {
             /> */}
             <ChannelConfigurationModal
                 channel={channel}
+                initialChannelThreshold={channel?.threshold?.toString()}
                 isOpen={isChannelConfigurationModalOpen}
                 onClose={onChannelConfigurationModalClose}
             />
@@ -261,17 +258,6 @@ export default function ChannelDetailsPage() {
                         </div>
                         <Spacer />
                         <div className="flex space-x-2">
-                            {authenticated &&
-                            user &&
-                            channel.lead.fid === user.farcaster?.fid ? (
-                                <IconButton
-                                    colorScheme="purple"
-                                    aria-label="Edit Channel Settings"
-                                    onClick={onChannelConfigurationModalOpen}
-                                    icon={<MdOutlineModeEdit />}
-                                />
-                            ) : null}
-
                             {isConnectedUserStreaming && (
                                 <Button
                                     colorScheme="red"
@@ -285,27 +271,7 @@ export default function ChannelDetailsPage() {
                     </div>
                 )}
 
-                {authenticated &&
-                channel &&
-                user &&
-                channel.lead.fid === user.farcaster?.fid ? (
-                    <>
-                        {streamedUntilUpdatedAts &&
-                            updatedAtTimestamps &&
-                            currentFlowRates && (
-                                <ScreenTotal
-                                    streamedUntilUpdatedAts={
-                                        streamedUntilUpdatedAts
-                                    }
-                                    updatedAtTimestamps={updatedAtTimestamps}
-                                    currentFlowRates={currentFlowRates}
-                                />
-                            )}
-                        {subscribedUsers && (
-                            <ScreenList items={subscribedUsers} />
-                        )}
-                    </>
-                ) : isConnected ? (
+                {isConnected ? (
                     isConnectedUserStreaming ? (
                         unlockTime ? (
                             <>
@@ -350,16 +316,31 @@ export default function ChannelDetailsPage() {
                         )
                     ) : (
                         <div className="flex flex-col w-full h-full flex-1 justify-center">
-                            <div className="flex flex-col h-full items-center bg-[url('/slide.svg'),_url('/pattern.svg')]  bg-[length:100%_100%] bg-[position:10px_-25px] p-4">
-                                <img src="/Token.png" />
-                                <Button
-                                    onClick={startStream}
-                                    isLoading={loadingStartStream}
-                                    colorScheme="purple"
-                                >
-                                    Stream {channel?.threshold} DEGENx/day
-                                </Button>
-                            </div>
+                            {channel?.threshold && (
+                                <div className="flex flex-col h-full space-y-2 items-center bg-[url('/slide.svg'),_url('/pattern.svg')]  bg-[length:100%_100%] bg-[position:10px_-25px] p-4">
+                                    <div className="flex flex-col items-center">
+                                        <img src="/Token.png" />
+                                        <Button
+                                            onClick={startStream}
+                                            isLoading={loadingStartStream}
+                                            colorScheme="purple"
+                                        >
+                                            Stream{" "}
+                                            {Number(channel?.threshold) * 4}{" "}
+                                            DEGENx/day
+                                        </Button>
+                                    </div>
+                                    <div className="flex space-x-2 items-center">
+                                        <MdInfo className="text-gray-500" />
+                                        <Text
+                                            fontSize="sm"
+                                            className="text-gray-500"
+                                        >
+                                            You get access in 6 hours
+                                        </Text>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     )
                 ) : (

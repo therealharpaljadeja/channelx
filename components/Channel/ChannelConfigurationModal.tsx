@@ -26,12 +26,14 @@ export default function ChannelConfigurationModal({
     channel,
     isOpen,
     onClose,
+    initialChannelThreshold = "0",
 }: {
     channel: Channel | null;
     isOpen: boolean;
     onClose: () => void;
+    initialChannelThreshold?: string;
 }) {
-    const [threshold, setThreshold] = useState("");
+    const [threshold, setThreshold] = useState(initialChannelThreshold);
     const [loading, setLoading] = useState(false);
     const toast = useToast();
 
@@ -74,32 +76,33 @@ export default function ChannelConfigurationModal({
 
                 await kv.set(channel.id, threshold);
 
-                toast({
-                    title: "Threshold set.",
-                    status: "success",
-                    duration: 5000,
-                    isClosable: true,
-                    position: "bottom",
-                });
-                toast({
-                    title: "Just add @bot007 as a co-host and the bot will do the rest",
-                    status: "info",
-                    containerStyle: {
-                        width: "350px",
-                    },
-                    duration: 10000,
-                    isClosable: true,
-                    position: "bottom",
-                });
+                // toast({
+                //     title: "Threshold set.",
+                //     status: "success",
+                //     duration: 5000,
+                //     isClosable: true,
+                //     position: "bottom",
+                // });
+                // toast({
+                //     title: "Just add @bot007 as a co-host and the bot will do the rest",
+                //     status: "info",
+                //     containerStyle: {
+                //         width: "350px",
+                //     },
+                //     duration: 10000,
+                //     isClosable: true,
+                //     position: "bottom",
+                // });
                 onClose();
             } catch (error) {
-                toast({
-                    title: "Something went wrong",
-                    status: "error",
-                    duration: 5000,
-                    isClosable: true,
-                    position: "bottom",
-                });
+                console.log(error);
+                // toast({
+                //     title: "Something went wrong",
+                //     status: "error",
+                //     duration: 5000,
+                //     isClosable: true,
+                //     position: "bottom",
+                // });
             } finally {
                 setLoading(false);
             }
@@ -127,12 +130,13 @@ export default function ChannelConfigurationModal({
                             <Input
                                 onChange={handleThresholdChange}
                                 placeholder="5"
+                                value={threshold}
                             />
                             <div className="flex space-x-2 items-center">
                                 <MdInfo className="text-gray-500" />
                                 <Text fontSize="sm" className="text-gray-500">
-                                    {Number(threshold) * 30} DEGENx income per
-                                    month
+                                    {Number(threshold) * 30 * 4} DEGENx income
+                                    per month
                                 </Text>
                             </div>
                         </div>

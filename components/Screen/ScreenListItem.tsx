@@ -22,7 +22,7 @@ export default function ScreenListItem({
     currentFlowRate,
 }: ItemProps) {
     return (
-        <Link href={currentFlowRate ? "#" : `/channel/${fid}`}>
+        <Link href={currentFlowRate ? "#" : `/app/channel/${fid}`}>
             <div className="flex border-2 items-center border-gray-200 space-x-4 rounded-md py-4 px-4 hover:bg-gray-50">
                 <div className="flex space-x-4">
                     <div className="flex">
