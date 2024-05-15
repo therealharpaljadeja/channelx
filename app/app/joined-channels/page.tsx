@@ -26,6 +26,7 @@ export default function JoinedChannels() {
                 updatedAtTimestamps &&
                 currentFlowRates && (
                     <ScreenTotal
+                        title="Est. Expenditure"
                         streamedUntilUpdatedAts={streamedUntilUpdatedAts}
                         updatedAtTimestamps={updatedAtTimestamps}
                         currentFlowRates={currentFlowRates}

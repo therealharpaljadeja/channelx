@@ -2,10 +2,12 @@ import { Heading, Text } from "@chakra-ui/react";
 import FlowingBalance from "../FlowingBalance";
 
 export default function ScreenTotal({
+    title = "Est. Earnings",
     streamedUntilUpdatedAts,
     updatedAtTimestamps,
     currentFlowRates,
 }: {
+    title?: string;
     streamedUntilUpdatedAts: string[];
     updatedAtTimestamps: string[];
     currentFlowRates: string[];
@@ -15,6 +17,7 @@ export default function ScreenTotal({
     let streamedUntilUpdatedAtsBigInt = streamedUntilUpdatedAts.map(
         (streamedUntilUpdatedAt) => BigInt(streamedUntilUpdatedAt)
     );
+
     let currentFlowRatesBigInt = currentFlowRates.map((currentFlowRate) =>
         BigInt(currentFlowRate)
     );
@@ -25,7 +28,7 @@ export default function ScreenTotal({
     return (
         <div className="py-4">
             <div className="shadow-lg shadow-[#A78FD2] py-4 bg-[url('/background.svg')] bg-cover text-white space-y-4 flex flex-col items-center justify-center">
-                <Heading size="sm">Est. Earnings</Heading>
+                <Heading size="sm">{title}</Heading>
                 <div className="flex items-end space-x-2">
                     <FlowingBalance
                         startingBalance={streamedUntilUpdatedAtsBigInt}

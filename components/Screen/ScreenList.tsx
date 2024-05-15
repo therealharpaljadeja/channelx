@@ -1,5 +1,5 @@
 import Item from "./ScreenListItem";
-import { Channel, User } from "@/utils/api";
+import { Channel, User, cfaStream } from "@/utils/api";
 
 function determineIfItemIsUser(item: Channel | User): item is User {
     if ((item as User).pfp_url) {
@@ -26,17 +26,55 @@ export default function ScreenList({ items }: { items: Channel[] | User[] }) {
                     name = item.display_name;
                     followers = item.follower_count;
                     imageUrl = item.pfp_url;
-                    streamedUntilUpdatedAt = item.streamedUntilUpdatedAt;
-                    updatedAtTimestamp = item.updatedAtTimestamp;
-                    currentFlowRate = item.currentFlowRate;
-                } else {
-                    fid = item.id;
-                    name = item.name;
-                    followers = item.follower_count;
-                    imageUrl = item.image_url;
-                    streamedUntilUpdatedAt = item.streamedUntilUpdatedAt;
-                    updatedAtTimestamp = item.updatedAtTimestamp;
-                    currentFlowRate = item.currentFlowRate;
+
+                    if (item.cfaStreams) {
+                        streamedUntilUpdatedAt = item.cfaStreams.map(
+                            (stream: cfaStream) =>
+                                BigInt(stream.streamedUntilUpdatedAt)
+                        );
+                        updatedAtTimestamp = item.cfaStreams.map(
+                            (stream: cfaStream) =>
+                                new Date(
+                                    Number(stream.updatedAtTimestamp) * 1000
+                                )
+                        );
+                        currentFlowRate = item.cfaStreams.map(
+                            (stream: cfaStream) =>
+                                BigInt(stream.currentFlowRate)
+                        );
+                    }
+
+                    return (
+                        <Item
+                            key={fid}
+                            name={name}
+                            followers={followers}
+                            imageUrl={imageUrl}
+                            fid={fid}
+                            streamedUntilUpdatedAt={streamedUntilUpdatedAt}
+                            updatedAtTimestamp={updatedAtTimestamp}
+                            currentFlowRate={currentFlowRate}
+                        />
+                    );
+                }
+
+                fid = item.id;
+                name = item.name;
+                followers = item.follower_count;
+                imageUrl = item.image_url;
+
+                if (item.cfaStreams) {
+                    streamedUntilUpdatedAt = item.cfaStreams.map(
+                        (stream: cfaStream) =>
+                            BigInt(stream.streamedUntilUpdatedAt)
+                    );
+                    updatedAtTimestamp = item.cfaStreams.map(
+                        (stream: cfaStream) =>
+                            new Date(Number(stream.updatedAtTimestamp) * 1000)
+                    );
+                    currentFlowRate = item.cfaStreams.map((stream: cfaStream) =>
+                        BigInt(stream.currentFlowRate)
+                    );
                 }
 
                 return (

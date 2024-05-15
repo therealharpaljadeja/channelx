@@ -18,6 +18,7 @@ export type User = {
     streamedUntilUpdatedAt?: string;
     updatedAtTimestamp?: string;
     currentFlowRate?: string;
+    cfaStreams?: cfaStream[];
 };
 
 export type Channel = {
@@ -32,6 +33,7 @@ export type Channel = {
     updatedAtTimestamp?: string;
     currentFlowRate?: string;
     threshold?: string;
+    cfaStreams?: cfaStream[];
 };
 
 export type cfaStream = {
@@ -53,7 +55,6 @@ export async function fetchAllChannelsOwnedByAnFid(fid: number) {
 
     while (true) {
         let response = {} as any;
-        console.log(i);
         if (i == 0) {
             response = await axios.get(
                 `https://api.neynar.com/v2/farcaster/user/channels?fid=${fid}&limit=100`,
@@ -66,8 +67,6 @@ export async function fetchAllChannelsOwnedByAnFid(fid: number) {
             );
             i++;
         } else {
-            console.log(i);
-
             if (nextCursor != null) {
                 response = await axios.get(
                     `https://api.neynar.com/v2/farcaster/user/channels?fid=${fid}&limit=100&cursor=${nextCursor}`,

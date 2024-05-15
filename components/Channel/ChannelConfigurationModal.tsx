@@ -43,7 +43,6 @@ export default function ChannelConfigurationModal({
     }
 
     async function createChannelWebhook(channelId: string, channelUrl: string) {
-        console.log(process.env.NEXT_PUBLIC_NEYNAR_API_KEY);
         let response = await axios.post(
             "https://api.neynar.com/v2/farcaster/webhook",
             {
@@ -60,8 +59,6 @@ export default function ChannelConfigurationModal({
                 },
             }
         );
-
-        console.log(response);
     }
 
     async function setChannelThreshold() {
@@ -69,8 +66,6 @@ export default function ChannelConfigurationModal({
             setLoading(true);
             try {
                 let channelExists = await kv.get(channel.id);
-
-                console.log("ChannelExists", channelExists);
 
                 if (!channelExists) {
                     // Create webhook for channel because is not being tracked

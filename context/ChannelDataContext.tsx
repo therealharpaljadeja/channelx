@@ -86,19 +86,14 @@ export function ChannelDataProvider({ children }: { children: ReactNode }) {
                         await fetchAllFarcasterUsersFromAddresses(
                             addressesStreamingToChannelOwner
                         );
-
                     for (const address in subscribedUsersData) {
                         let user = subscribedUsersData[address][0];
+                        user.cfaStreams = [];
 
                         for (let i = 0; i < cfaStreams.length; i++) {
                             if (cfaStreams[i].sender) {
                                 if (address === cfaStreams[i].sender?.id) {
-                                    user.streamedUntilUpdatedAt =
-                                        cfaStreams[i].streamedUntilUpdatedAt;
-                                    user.updatedAtTimestamp =
-                                        cfaStreams[i].updatedAtTimestamp;
-                                    user.currentFlowRate =
-                                        cfaStreams[i].currentFlowRate;
+                                    user.cfaStreams.push(cfaStreams[i]);
 
                                     streamedUntilUpdatedAts.push(
                                         cfaStreams[i].streamedUntilUpdatedAt

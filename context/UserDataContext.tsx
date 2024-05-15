@@ -79,6 +79,7 @@ export function UserDataProvider({ children }: { children: ReactNode }) {
 
                         for (let i = 0; i < ownedChannels.length; i++) {
                             let channel = ownedChannels[i];
+                            channel.cfaStreams = [];
 
                             for (let j = 0; j < cfaStreams.length; j++) {
                                 if (
@@ -86,21 +87,16 @@ export function UserDataProvider({ children }: { children: ReactNode }) {
                                     channel.lead.verified_addresses
                                         .eth_addresses[0]
                                 ) {
-                                    channel.streamedUntilUpdatedAt =
-                                        cfaStreams[j].streamedUntilUpdatedAt;
-                                    channel.updatedAtTimestamp =
-                                        cfaStreams[j].updatedAtTimestamp;
-                                    channel.currentFlowRate =
-                                        cfaStreams[j].currentFlowRate;
+                                    channel.cfaStreams.push(cfaStreams[j]);
 
                                     streamedUntilUpdatedAts.push(
-                                        cfaStreams[i].streamedUntilUpdatedAt
+                                        cfaStreams[j].streamedUntilUpdatedAt
                                     );
                                     updatedAtTimestamps.push(
-                                        cfaStreams[i].updatedAtTimestamp
+                                        cfaStreams[j].updatedAtTimestamp
                                     );
                                     currentFlowRates.push(
-                                        cfaStreams[i].currentFlowRate
+                                        cfaStreams[j].currentFlowRate
                                     );
                                 }
                             }
@@ -124,7 +120,6 @@ export function UserDataProvider({ children }: { children: ReactNode }) {
                     await getChannels(fid);
                     await getUserJoinedChannels(user.farcaster.fid);
                     setLoading(false);
-                    // getUserJoinedChannels(399712);
                 }
             }
         }

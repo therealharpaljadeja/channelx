@@ -111,18 +111,23 @@ export default function ChannelDetailsPage() {
                     address.toLowerCase()
                 );
 
+                cfaStreams = cfaStreams.filter((stream: cfaStream) => {
+                    return (
+                        stream.receiver &&
+                        stream.receiver.id === channelOwner.toLowerCase()
+                    );
+                });
+
                 let cfaStream = cfaStreams.filter((stream: cfaStream) => {
                     return (
                         stream.receiver &&
                         stream.receiver.id === channelOwner.toLowerCase() &&
                         Number(stream.currentFlowRate) > 0
                     );
-                });
-
-                cfaStream = cfaStream[0];
+                })[0];
 
                 if (cfaStream) {
-                    let amountStreamedToUser =
+                    let amountStreamingToUser =
                         BigInt(
                             parseEther((channel.threshold as string).toString())
                         ) -
@@ -133,7 +138,8 @@ export default function ChannelDetailsPage() {
                             BigInt(1000);
 
                     let timeAfterWhichCastingUnlocks = Number(
-                        amountStreamedToUser / BigInt(cfaStream.currentFlowRate)
+                        amountStreamingToUser /
+                            BigInt(cfaStream.currentFlowRate)
                     );
 
                     setIsConnectedUserStreaming(true);
@@ -272,7 +278,7 @@ export default function ChannelDetailsPage() {
                                     aria-label="Stop Stream"
                                     onClick={deleteFlow}
                                 >
-                                    Stop Stream
+                                    Stop
                                 </Button>
                             )}
                         </div>

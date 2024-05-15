@@ -7,9 +7,9 @@ export type ItemProps = {
     name: string;
     imageUrl: string;
     followers: number;
-    streamedUntilUpdatedAt?: string;
-    updatedAtTimestamp?: string;
-    currentFlowRate?: string;
+    streamedUntilUpdatedAt?: bigint[] | string;
+    updatedAtTimestamp?: Date[] | string;
+    currentFlowRate?: bigint[] | string;
 };
 
 export default function ScreenListItem({
@@ -41,16 +41,33 @@ export default function ScreenListItem({
                             currentFlowRate && (
                                 <>
                                     <FlowingBalance
-                                        startingBalance={[
-                                            BigInt(streamedUntilUpdatedAt),
-                                        ]}
-                                        startingBalanceDate={[
-                                            new Date(
-                                                Number(updatedAtTimestamp) *
-                                                    1000
-                                            ),
-                                        ]}
-                                        flowRate={[BigInt(currentFlowRate)]}
+                                        startingBalance={
+                                            typeof streamedUntilUpdatedAt ===
+                                            "string"
+                                                ? [
+                                                      BigInt(
+                                                          streamedUntilUpdatedAt
+                                                      ),
+                                                  ]
+                                                : streamedUntilUpdatedAt
+                                        }
+                                        startingBalanceDate={
+                                            typeof updatedAtTimestamp ===
+                                            "string"
+                                                ? [
+                                                      new Date(
+                                                          Number(
+                                                              updatedAtTimestamp
+                                                          ) * 1000
+                                                      ),
+                                                  ]
+                                                : updatedAtTimestamp
+                                        }
+                                        flowRate={
+                                            typeof currentFlowRate === "string"
+                                                ? [BigInt(currentFlowRate)]
+                                                : currentFlowRate
+                                        }
                                         size="sm"
                                     />
                                     <Text fontSize="xs">DEGENx</Text>
