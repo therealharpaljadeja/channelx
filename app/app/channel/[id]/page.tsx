@@ -424,7 +424,7 @@ export default function ChannelDetailsPage() {
                         <Text fontSize="sm">{`Managed by @${channel.lead.username}`}</Text>
                     </div>
                     <Spacer />
-                    {/* <div className="flex space-x-2">
+                    <div className="flex space-x-2">
                         {authenticated &&
                         user &&
                         isFidChannelHost(user.farcaster?.fid) ? (
@@ -435,7 +435,7 @@ export default function ChannelDetailsPage() {
                                 icon={<MdOutlineModeEdit />}
                             />
                         ) : null}
-                    </div> */}
+                    </div>
                 </div>
                 <Heading className="mb-12" size={"md"}>
                     Setup Channel
