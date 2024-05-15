@@ -161,7 +161,6 @@ export default function ChannelDetailsPage() {
         setLoading(true);
         try {
             if (channelOwner && channel) {
-                console.log(channel.threshold);
                 const createFlowOperation = await cfaV1.createFlow({
                     superToken: DEGENx,
                     sender: address,
@@ -184,6 +183,7 @@ export default function ChannelDetailsPage() {
                 router.refresh();
             }
         } catch (error) {
+            console.log("Error");
             console.log(error);
         } finally {
             setLoading(false);
@@ -227,8 +227,6 @@ export default function ChannelDetailsPage() {
     } = context;
 
     if (loading) return <LoadingState />;
-
-    console.log(unlockTime);
 
     return (
         <>

@@ -313,10 +313,11 @@ export default function ChannelDetailsPage() {
                         <IconButton
                             aria-label="edit-step"
                             icon={<MdOutlineModeEdit />}
+                            onClick={onChannelConfigurationModalOpen}
                             colorScheme="purple"
                             className="mx-2"
                         />{" "}
-                        button at the top right position to set threshold
+                        button to set threshold
                     </div>
                     <Button
                         onClick={async () => {
@@ -423,7 +424,7 @@ export default function ChannelDetailsPage() {
                         <Text fontSize="sm">{`Managed by @${channel.lead.username}`}</Text>
                     </div>
                     <Spacer />
-                    <div className="flex space-x-2">
+                    {/* <div className="flex space-x-2">
                         {authenticated &&
                         user &&
                         isFidChannelHost(user.farcaster?.fid) ? (
@@ -434,7 +435,7 @@ export default function ChannelDetailsPage() {
                                 icon={<MdOutlineModeEdit />}
                             />
                         ) : null}
-                    </div>
+                    </div> */}
                 </div>
                 <Heading className="mb-12" size={"md"}>
                     Setup Channel
