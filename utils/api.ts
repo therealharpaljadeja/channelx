@@ -103,19 +103,25 @@ export async function fetchAllChannelsOwnedByAnFid(fid: number) {
 
 export async function fetchAllFarcasterUsersFromAddresses(addresses: string[]) {
     let param = addresses.join(",");
-    let response = await axios.get(
-        `https://api.neynar.com/v2/farcaster/user/bulk-by-address?addresses=${param}`,
-        {
-            headers: {
-                Accept: "application/json",
-                api_key: process.env.NEXT_PUBLIC_NEYNAR_API_KEY,
-            },
-        }
-    );
 
-    let data = response.data;
+    try {
+        let response = await axios.get(
+            `https://api.neynar.com/v2/farcaster/user/bulk-by-address?addresses=${param}`,
+            {
+                headers: {
+                    Accept: "application/json",
+                    api_key: process.env.NEXT_PUBLIC_NEYNAR_API_KEY,
+                },
+            }
+        );
+        let data = response.data;
 
-    return data;
+        return data;
+    } catch (error) {
+        console.log(error);
+    }
+
+    return [];
 }
 
 export async function fetchAllIncomingStreamsToAnAddress(
