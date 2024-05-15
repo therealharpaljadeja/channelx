@@ -25,6 +25,12 @@ export default function ScreenTotal({
         (updatedAtTimestamp) => new Date(Number(updatedAtTimestamp) * 1000)
     );
 
+    console.log(
+        streamedUntilUpdatedAtsBigInt,
+        currentFlowRatesBigInt,
+        updatedAtTimestampsDate
+    );
+
     return (
         <div className="py-4">
             <div className="shadow-lg shadow-[#A78FD2] py-4 bg-[url('/background.svg')] bg-cover text-white space-y-4 flex flex-col items-center justify-center">

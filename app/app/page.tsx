@@ -5,6 +5,7 @@ import ScreenList from "@/components/Screen/ScreenList";
 import ScreenTitle from "@/components/Screen/ScreenTitle";
 import ScreenTotal from "@/components/Screen/ScreenTotal";
 import UserDataContext from "@/context/UserDataContext";
+import { Text } from "@chakra-ui/react";
 import { useContext } from "react";
 
 export default function OwnedChannels() {
@@ -32,7 +33,13 @@ export default function OwnedChannels() {
                         currentFlowRates={currentFlowRates}
                     />
                 )} */}
-            {userOwnedChannels && <ScreenList items={userOwnedChannels} />}
+            {userOwnedChannels && userOwnedChannels.length ? (
+                <ScreenList items={userOwnedChannels} />
+            ) : (
+                <div className="flex-1 rounded-md border-2 border-dashed border-gray-200 flex items-center justify-center">
+                    <Text>You are a owner or co-host of any channels</Text>
+                </div>
+            )}
         </Screen>
     );
 }

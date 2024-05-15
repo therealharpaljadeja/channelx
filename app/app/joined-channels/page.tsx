@@ -5,6 +5,7 @@ import ScreenList from "@/components/Screen/ScreenList";
 import ScreenTitle from "@/components/Screen/ScreenTitle";
 import ScreenTotal from "@/components/Screen/ScreenTotal";
 import UserDataContext from "@/context/UserDataContext";
+import { Text } from "@chakra-ui/react";
 import { useContext } from "react";
 
 export default function JoinedChannels() {
@@ -19,6 +20,13 @@ export default function JoinedChannels() {
         currentFlowRates,
     } = context;
 
+    console.log(
+        userjoinedChannels,
+        streamedUntilUpdatedAts,
+        updatedAtTimestamps,
+        currentFlowRates
+    );
+
     return (
         <Screen>
             <ScreenTitle>Joined Channels</ScreenTitle>
@@ -32,7 +40,13 @@ export default function JoinedChannels() {
                         currentFlowRates={currentFlowRates}
                     />
                 )}
-            {userjoinedChannels && <ScreenList items={userjoinedChannels} />}
+            {userjoinedChannels && userjoinedChannels.length ? (
+                <ScreenList items={userjoinedChannels} />
+            ) : (
+                <div className="flex-1 rounded-md border-2 border-dashed border-gray-200 flex items-center justify-center">
+                    <Text>You are not subscribed to any channels</Text>
+                </div>
+            )}
         </Screen>
     );
 }

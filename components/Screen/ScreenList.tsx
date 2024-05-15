@@ -10,6 +10,8 @@ function determineIfItemIsUser(item: Channel | User): item is User {
 }
 
 export default function ScreenList({ items }: { items: Channel[] | User[] }) {
+    console.log("Items", items);
+
     return (
         <div className="flex flex-col max-h-[400px] overflow-y-auto space-y-2">
             {items.map((item) => {

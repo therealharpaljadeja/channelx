@@ -80,6 +80,7 @@ export function UserDataProvider({ children }: { children: ReactNode }) {
                         for (let i = 0; i < ownedChannels.length; i++) {
                             let channel = ownedChannels[i];
                             channel.cfaStreams = [];
+                            let isUserStreamingToChannel = false;
 
                             for (let j = 0; j < cfaStreams.length; j++) {
                                 if (
@@ -88,6 +89,12 @@ export function UserDataProvider({ children }: { children: ReactNode }) {
                                         .eth_addresses[0]
                                 ) {
                                     channel.cfaStreams.push(cfaStreams[j]);
+
+                                    if (
+                                        Number(cfaStreams[j].currentFlowRate) >
+                                        0
+                                    )
+                                        isUserStreamingToChannel = true;
 
                                     streamedUntilUpdatedAts.push(
                                         cfaStreams[j].streamedUntilUpdatedAt
@@ -101,7 +108,9 @@ export function UserDataProvider({ children }: { children: ReactNode }) {
                                 }
                             }
 
-                            subscribedChannels.push(channel);
+                            if (isUserStreamingToChannel) {
+                                subscribedChannels.push(channel);
+                            }
                         }
 
                         setCurrentFlowRates(currentFlowRates);
