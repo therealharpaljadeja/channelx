@@ -2,6 +2,11 @@
 import "./globals.css";
 import { Providers } from "./providers";
 
+export const metadata = {
+    title: "ChannelX",
+    description: "Gate your channel using DEGENx SuperFluid stream",
+};
+
 export default function RootLayout({
     children,
 }: Readonly<{
