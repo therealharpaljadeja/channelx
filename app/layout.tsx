@@ -4,6 +4,7 @@ import { Providers } from "./providers";
 export const metadata = {
     title: "ChannelX",
     description: "Gate your channel using DEGENx SuperFluid stream",
+    image: "https://www.channelx.stream/opengraph-image.jpg",
 };
 
 export default function RootLayout({
