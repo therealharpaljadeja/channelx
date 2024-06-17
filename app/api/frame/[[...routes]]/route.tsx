@@ -7,6 +7,7 @@ import { serveStatic } from "frog/serve-static";
 import { createClient } from "@vercel/kv";
 import {
     fetchAddressAndUsernameOfAnFid,
+    fetchChannelDetails,
     fetchChannelOwnerAddress,
     getDegenXStreamBetween2Addresses,
 } from "@/utils/api";
@@ -29,9 +30,13 @@ app.frame("/:channelId", async (c) => {
     const channelId = c.req.param("channelId");
 
     if (channelId) {
+        console.log(channelId);
         // Check if channel has enabled gating.
         // Check which type of gating
         let gatingType = await kv.get(`SUBTYPE_${channelId}`);
+        let channelDetails = await fetchChannelDetails(channelId);
+
+        let { name, image_url } = channelDetails;
 
         switch (gatingType) {
             case "STREAM":
@@ -56,10 +61,11 @@ app.frame("/:channelId", async (c) => {
                                 height="240"
                                 width="240"
                                 style={{ borderRadius: "240" }}
-                                src="https://imagedelivery.net/BXluQx4ige9GuW0Ia56BHw/1510a5b0-80e0-433b-2170-4883bc95c800/original"
+                                src={image_url}
                             />
                             <p style={{ fontSize: "48", fontWeight: "500" }}>
-                                Degenx
+                                {name.charAt(0).toUpperCase() +
+                                    name.substr(1).toLowerCase()}
                             </p>
                             <p style={{ fontSize: "32" }}>
                                 To Cast stream {streamRate} DEGENx/Month
@@ -270,7 +276,7 @@ app.transaction("/:channelId/stream", async (c) => {
         let channelOwnerAddress = await fetchChannelOwnerAddress(channelId);
 
         let { verifiedAddress: currentUserConnectedAddress } =
-            await fetchAddressAndUsernameOfAnFid(399712);
+            await fetchAddressAndUsernameOfAnFid(fid);
 
         return c.contract({
             abi,
@@ -279,8 +285,8 @@ app.transaction("/:channelId/stream", async (c) => {
             functionName: "createFlow",
             args: [
                 "0x1eff3dd78f4a14abfa9fa66579bd3ce9e1b30529", //token
-                currentUserConnectedAddress, // sender // receiver
-                ,
+                currentUserConnectedAddress, // sender
+                channelOwnerAddress, // receiver
                 1835317460, // flowRate
                 "", // userData
             ],
