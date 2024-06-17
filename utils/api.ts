@@ -49,6 +49,22 @@ export type cfaStream = {
     updatedAtTimestamp: string;
 };
 
+export async function fetchChannelDetails(channelId: string) {
+    let response = await axios.get(
+        `https://api.neynar.com/v2/farcaster/channel?id=${channelId}&type=id`,
+        {
+            headers: {
+                Accept: "application/json",
+                api_key: process.env.NEXT_PUBLIC_NEYNAR_API_KEY,
+            },
+        }
+    );
+
+    let { channel } = response.data;
+
+    return channel;
+}
+
 export async function fetchAllChannelsOwnedByAnFid(fid: number) {
     let allChannelsUserFollows = [];
     let nextCursor = "";
@@ -224,4 +240,66 @@ export async function fetchUserBasedOnFID(fid: number) {
     let { users } = response.data;
 
     return users[0];
+}
+
+export async function fetchChannelOwnerAddress(channelId: string) {
+    let channelDetails = await fetchChannelDetails(channelId);
+
+    let channelOwner = channelDetails.lead;
+
+    let verifiedAddressOfChannelOwner = channelOwner.verifications[0];
+
+    return verifiedAddressOfChannelOwner;
+}
+
+export async function getDegenXStreamBetween2Addresses(
+    sender: string,
+    receiver: string
+) {
+    var query = `{
+      cfaStreams: streams(
+        where: {sender:"${sender}",receiver:"${receiver}",currentFlowRate_gt:0, token: "0x1eff3dd78f4a14abfa9fa66579bd3ce9e1b30529"}
+      ) {
+        currentFlowRate
+        streamedUntilUpdatedAt
+        updatedAtTimestamp
+        sender {
+          id
+        }
+      }
+    }
+    
+    `;
+    try {
+        let response: any = await fetch(
+            "https://subgraph-endpoints.superfluid.dev/base-mainnet/protocol-v1",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Accept: "*/*",
+                    connection: "keep-alive",
+                    "Access-Control-Allow-Origin": "*",
+                    cache: "force-cache",
+                },
+                body: JSON.stringify({
+                    query,
+                }),
+            }
+        );
+
+        let data = await response.json();
+        return data.data.cfaStreams;
+    } catch (e) {
+        console.log("Error at 75", e);
+    }
+}
+
+export async function fetchAddressAndUsernameOfAnFid(fid: number) {
+    let user = await fetchUserBasedOnFID(fid);
+
+    let verifiedAddress = user.verifications[0];
+    let username = user.username;
+
+    return { verifiedAddress, username };
 }
