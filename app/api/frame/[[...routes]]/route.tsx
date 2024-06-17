@@ -106,7 +106,7 @@ app.frame("/:channelId", async (c) => {
                                 Degenx
                             </p>
                             <p style={{ fontSize: "32" }}>
-                                Subscribe to X's AlfaFrens
+                                Subscribe to Xs AlfaFrens
                             </p>
                         </div>
                     ),
