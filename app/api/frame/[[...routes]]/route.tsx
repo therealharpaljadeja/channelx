@@ -1,5 +1,5 @@
 /** @jsxImportSource frog/jsx */
-import { Button, Frog, TextInput, parseEther } from "frog";
+import { Button, Frog, parseEther } from "frog";
 
 import { handle } from "frog/next";
 import { devtools } from "frog/dev";
@@ -12,10 +12,12 @@ import {
     getDegenXStreamBetween2Addresses,
 } from "@/utils/api";
 import abi from "@/utils/abi/CFA";
+import SuperTokenAbi from "@/utils/abi/SuperToken";
 import { formatEther } from "viem";
 
 type State = {
     channelId: string;
+    approve: boolean;
 };
 
 // When someone tries to click on frame url they go to subscribe page.
@@ -24,6 +26,7 @@ const app = new Frog<{ State: State }>({
     browserLocation: "/subscribe/:channelId",
     initialState: {
         channelId: "",
+        approve: false,
     },
 });
 
@@ -33,6 +36,8 @@ const kv = createClient({
 });
 
 const CFA = "0xcfA132E353cB4E398080B9700609bb008eceB125";
+const SUPER_DEGEN = "0x1efF3Dd78F4A14aBfa9Fa66579bD3Ce9E1B30529";
+const DEGEN = "0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed";
 
 app.frame("/:channelId/eligibility", async (c) => {
     const channelId = c.req.param("channelId");
@@ -40,6 +45,8 @@ app.frame("/:channelId/eligibility", async (c) => {
 
     if (frameData) {
         const { fid } = frameData;
+        const { previousState } = c;
+
         if (channelId) {
             // Check which type of gating
             let gatingType = await kv.get(`SUBTYPE_${channelId}`);
@@ -122,6 +129,9 @@ app.frame("/:channelId/eligibility", async (c) => {
                                 </p>
                             </div>
                         ),
+                        intents: [
+                            <Button action={`/${channelId}`}>Home</Button>,
+                        ],
                     });
             }
         }
@@ -149,18 +159,55 @@ app.frame("/:channelId/eligibility", async (c) => {
     });
 });
 
+app.frame("/swap", (c) => {
+    return c.res({
+        image: (
+            <div
+                style={{
+                    width: "100%",
+                    height: "100%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                }}
+            >
+                <p style={{ fontSize: "32", color: "white" }}>Swap DEGEN</p>
+            </div>
+        ),
+        intents: [
+            <Button.Transaction action="/finish" target={`/swap`}>
+                Swap
+            </Button.Transaction>,
+        ],
+    });
+});
+
 app.frame("/finish", (c) => {
     const { previousState, transactionId } = c;
 
     if (previousState.channelId) {
         return c.res({
             image: (
-                <div style={{ color: "white", display: "flex", fontSize: 60 }}>
-                    Transaction ID: {transactionId}
+                <div
+                    style={{
+                        color: "white",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        width: "100%",
+                        height: "100%",
+                    }}
+                >
+                    <p style={{ fontSize: 32, textAlign: "center" }}>
+                        Transaction Submitted
+                    </p>
                 </div>
             ),
             intents: [
                 <Button action={`/${previousState.channelId}`}>Home</Button>,
+                <Button.Link href={`https://basescan.org/tx/${transactionId}`}>
+                    View on Basescan
+                </Button.Link>,
             ],
         });
     }
@@ -228,6 +275,26 @@ app.transaction("/:channelId/stream", async (c) => {
     });
 });
 
+app.transaction("/approve", (c) => {
+    return c.contract({
+        abi: SuperTokenAbi,
+        chainId: "eip155:8453",
+        to: DEGEN,
+        functionName: "approve",
+        args: [SUPER_DEGEN, parseEther("1")],
+    });
+});
+
+app.transaction("/swap", (c) => {
+    return c.contract({
+        abi: SuperTokenAbi,
+        chainId: "eip155:8453",
+        to: SUPER_DEGEN,
+        functionName: "upgrade",
+        args: [parseEther("1")],
+    });
+});
+
 app.frame("/:channelId", async (c) => {
     const channelId = c.req.param("channelId");
     const { deriveState } = c;
@@ -282,6 +349,9 @@ app.frame("/:channelId", async (c) => {
                         <Button action={`/${channelId}/eligibility`}>
                             Check Eligibility
                         </Button>,
+                        <Button.Transaction action="/swap" target={`/approve`}>
+                            Approve
+                        </Button.Transaction>,
                         <Button.Transaction target={`/${channelId}/stream`}>
                             Start Streaming
                         </Button.Transaction>,
