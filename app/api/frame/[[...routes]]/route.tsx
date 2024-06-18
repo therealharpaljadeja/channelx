@@ -175,7 +175,7 @@ app.frame("/swap", (c) => {
             </div>
         ),
         intents: [
-            <Button.Transaction action="/finish" target={`/swap`}>
+            <Button.Transaction action="/finish" target={`/swap-degen`}>
                 Swap
             </Button.Transaction>,
         ],
@@ -285,7 +285,7 @@ app.transaction("/approve", (c) => {
     });
 });
 
-app.transaction("/swap", (c) => {
+app.transaction("/swap-degen", (c) => {
     return c.contract({
         abi: SuperTokenAbi,
         chainId: "eip155:8453",
