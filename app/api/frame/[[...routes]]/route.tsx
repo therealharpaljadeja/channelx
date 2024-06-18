@@ -245,6 +245,13 @@ app.transaction("/:channelId/stream", async (c) => {
 
         let flowRate = await kv.get(channelId);
 
+        console.log(channelOwnerAddress, currentUserConnectedAddress, flowRate);
+
+        console.log(
+            parseEther((flowRate as number).toString()) /
+                BigInt(30 * 24 * 60 * 60)
+        );
+
         return c.contract({
             abi,
             chainId: "eip155:8453",
@@ -255,14 +262,8 @@ app.transaction("/:channelId/stream", async (c) => {
                 currentUserConnectedAddress, // sender
                 channelOwnerAddress, // receiver
                 // Convert monthly degenx amount to seconds.
-                Math.round(
-                    Number(
-                        formatEther(
-                            parseEther(flowRate as string) /
-                                BigInt(30 * 24 * 60 * 60)
-                        )
-                    )
-                ), // flowRate
+                parseEther((flowRate as number).toString()) /
+                    BigInt(30 * 24 * 60 * 60),
                 "", // userData
             ],
         });
