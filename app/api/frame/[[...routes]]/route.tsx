@@ -63,37 +63,39 @@ app.frame("/:channelId/eligibility", async (c) => {
                         channelOwnerAddress
                     );
 
-                    let stream = streams[0];
+                    if (streams.length) {
+                        let stream = streams[0];
 
-                    let { currentFlowRate } = stream;
+                        let { currentFlowRate } = stream;
 
-                    if (currentFlowRate > 0) {
-                        return c.res({
-                            image: (
-                                <div
-                                    style={{
-                                        color: "white",
-                                        display: "flex",
-                                        width: "100%",
-                                        background: "black",
-                                        height: "100%",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        flexDirection: "column",
-                                    }}
-                                >
-                                    <p
+                        if (currentFlowRate > 0) {
+                            return c.res({
+                                image: (
+                                    <div
                                         style={{
-                                            fontSize: "48",
-                                            fontWeight: "500",
+                                            color: "white",
+                                            display: "flex",
+                                            width: "100%",
+                                            background: "black",
+                                            height: "100%",
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                            flexDirection: "column",
                                         }}
                                     >
-                                        @{username} is eligible to cast in{" "}
-                                        {channelId}
-                                    </p>
-                                </div>
-                            ),
-                        });
+                                        <p
+                                            style={{
+                                                fontSize: "48",
+                                                fontWeight: "500",
+                                            }}
+                                        >
+                                            @{username} is eligible to cast in{" "}
+                                            {channelId}
+                                        </p>
+                                    </div>
+                                ),
+                            });
+                        }
                     }
 
                     return c.res({
