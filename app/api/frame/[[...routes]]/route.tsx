@@ -55,7 +55,7 @@ app.frame("/:channelId/eligibility", async (c) => {
                     let {
                         verifiedAddress: currentUserConnectedAddress,
                         username,
-                    } = await fetchAddressAndUsernameOfAnFid(399712);
+                    } = await fetchAddressAndUsernameOfAnFid(fid);
 
                     // Find out if the current fid connected address is streaming to channel owner
                     let streams = await getDegenXStreamBetween2Addresses(
