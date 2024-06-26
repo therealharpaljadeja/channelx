@@ -126,19 +126,12 @@ export default function ChannelConfigurationModal({
                     </div>
                     <div className="flex flex-col items-start w-full space-y-4">
                         <div className="flex flex-col space-y-2 justify-between items-start w-full">
-                            <Text fontSize="sm">Threshold</Text>
+                            <Text fontSize="sm">Price per month</Text>
                             <Input
                                 onChange={handleThresholdChange}
                                 placeholder="5"
                                 value={threshold}
                             />
-                            <div className="flex space-x-2 items-center">
-                                <MdInfo className="text-gray-500" />
-                                <Text fontSize="sm" className="text-gray-500">
-                                    {Number(threshold) * 30 * 4} DEGENx income
-                                    per month
-                                </Text>
-                            </div>
                         </div>
                     </div>
                     <Button

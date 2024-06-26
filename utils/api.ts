@@ -108,10 +108,8 @@ export async function fetchAllChannelsOwnedByAnFid(fid: number) {
 
     if (allChannelsUserFollows) {
         for (let i = 0; i < allChannelsUserFollows.length; i++) {
-            for (let j = 0; j < allChannelsUserFollows[i].hosts.length; j++) {
-                if (allChannelsUserFollows[i].hosts[j].fid == fid)
-                    userOwnedChannels.push(allChannelsUserFollows[i]);
-            }
+            if (allChannelsUserFollows[i].lead.fid == fid)
+                userOwnedChannels.push(allChannelsUserFollows[i]);
         }
     }
 

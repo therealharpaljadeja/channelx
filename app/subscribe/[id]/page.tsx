@@ -67,7 +67,7 @@ export default function ChannelDetailsPage() {
     const context = useContext(ChannelDataContext);
     const { isConnected, address } = useAccount();
     const config = useConfig();
-    const [unlockTime, setUnlockTime] = useState<string | null>(null);
+    // const [unlockTime, setUnlockTime] = useState<string | null>(null);
     const [loadingStartStream, setLoading] = useState(false);
     const [isConnectedUserStreaming, setIsConnectedUserStreaming] =
         useState(false);
@@ -128,14 +128,14 @@ export default function ChannelDetailsPage() {
                             )) /
                             BigInt(1000);
 
-                    let timeAfterWhichCastingUnlocks = Number(
-                        amountStreamingToUser /
-                            BigInt(cfaStream.currentFlowRate)
-                    );
+                    // let timeAfterWhichCastingUnlocks = Number(
+                    //     amountStreamingToUser /
+                    //         BigInt(cfaStream.currentFlowRate)
+                    // );
 
                     setIsConnectedUserStreaming(true);
-                    console.log("unlockTime", unlockTime);
-                    setUnlockTime(formatTime(timeAfterWhichCastingUnlocks));
+                    // console.log("unlockTime", unlockTime);
+                    // setUnlockTime(formatTime(timeAfterWhichCastingUnlocks));
                 } else {
                     setIsConnectedUserStreaming(false);
                 }
@@ -271,47 +271,24 @@ export default function ChannelDetailsPage() {
 
                 {isConnected ? (
                     isConnectedUserStreaming ? (
-                        unlockTime ? (
-                            <>
-                                <div className="flex flex-col w-full h-full flex-1 justify-center">
-                                    <div className="flex flex-col items-center bg-[url('/pattern.svg')] space-y-4 p-4">
-                                        <img src="/channel-lock.svg" />
-
-                                        <p>Casting Unlocks in</p>
-                                        <Heading size="md" colorScheme="purple">
-                                            {unlockTime}
-                                        </Heading>
-                                        <Link
-                                            href={`https://warpcast.com/~/channel/${channel?.id}`}
-                                            target="_blank"
-                                        >
-                                            <Button colorScheme="purple">
-                                                View Channel
-                                            </Button>
-                                        </Link>
-                                    </div>
-                                </div>
-                            </>
-                        ) : (
-                            <>
-                                {streamedUntilUpdatedAts &&
-                                    updatedAtTimestamps &&
-                                    currentFlowRates && (
-                                        <ScreenTotal
-                                            streamedUntilUpdatedAts={
-                                                streamedUntilUpdatedAts
-                                            }
-                                            updatedAtTimestamps={
-                                                updatedAtTimestamps
-                                            }
-                                            currentFlowRates={currentFlowRates}
-                                        />
-                                    )}
-                                {subscribedUsers && (
-                                    <ScreenList items={subscribedUsers} />
+                        <>
+                            {streamedUntilUpdatedAts &&
+                                updatedAtTimestamps &&
+                                currentFlowRates && (
+                                    <ScreenTotal
+                                        streamedUntilUpdatedAts={
+                                            streamedUntilUpdatedAts
+                                        }
+                                        updatedAtTimestamps={
+                                            updatedAtTimestamps
+                                        }
+                                        currentFlowRates={currentFlowRates}
+                                    />
                                 )}
-                            </>
-                        )
+                            {subscribedUsers && (
+                                <ScreenList items={subscribedUsers} />
+                            )}
+                        </>
                     ) : (
                         <div className="flex flex-col w-full h-full flex-1 justify-center">
                             {channel?.threshold && (
@@ -323,19 +300,9 @@ export default function ChannelDetailsPage() {
                                             isLoading={loadingStartStream}
                                             colorScheme="purple"
                                         >
-                                            Stream{" "}
-                                            {Number(channel?.threshold) * 4}{" "}
-                                            DEGENx/day
+                                            Stream {Number(channel?.threshold)}{" "}
+                                            DEGENx/month
                                         </Button>
-                                    </div>
-                                    <div className="flex space-x-2 items-center">
-                                        <MdInfo className="text-gray-500" />
-                                        <Text
-                                            fontSize="sm"
-                                            className="text-gray-500"
-                                        >
-                                            You get access in 6 hours
-                                        </Text>
                                     </div>
                                 </div>
                             )}
