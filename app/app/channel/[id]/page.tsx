@@ -11,6 +11,8 @@ import {
     Button,
     Heading,
     IconButton,
+    Input,
+    Select,
     Spacer,
     Step,
     StepDescription,
@@ -40,6 +42,7 @@ import { LoadingState } from "@/components/LoadingState";
 import Link from "next/link";
 import { createClient } from "@vercel/kv";
 import axios from "axios";
+import { NFTGate } from "@/components/NFTGate";
 
 // const cfaV1 = new ConstantFlowAgreementV1(
 //     "0x4C073B3baB6d8826b8C5b229f3cfdC1eC6E47E74",
@@ -135,22 +138,9 @@ async function checkIfBotIsCoHost(fid?: string) {
 export default function ChannelDetailsPage() {
     const toast = useToast();
 
-    // const router = useRouter();
     const context = useContext(ChannelDataContext);
-    // const { isConnected, address } = useAccount();
-    // const config = useConfig();
-    // const [unlockTime, setUnlockTime] = useState<string | null>(null);
-    // const [loadingStartStream, setLoading] = useState(false);
-    // const [isConnectedUserStreaming, setIsConnectedUserStreaming] =
-    //     useState(false);
-    // const [channelOwner, setChannelOwner] = useState<string | null>(null);
-    const [isClient, setIsClient] = useState(false);
 
-    // const {
-    //     isOpen: isChannelInfoModalOpen,
-    //     onOpen: onChannelInfoModalOpen,
-    //     onClose: onChannelInfoModalClose,
-    // } = useDisclosure();
+    const [isClient, setIsClient] = useState(false);
 
     const {
         isOpen: isChannelConfigurationModalOpen,
@@ -158,152 +148,7 @@ export default function ChannelDetailsPage() {
         onClose: onChannelConfigurationModalClose,
     } = useDisclosure();
 
-    const { authenticated, user } = usePrivy();
-
-    const { activeStep, setActiveStep } = useSteps({
-        index: 0,
-        count: 3,
-    });
-
-    useEffect(() => {
-        setIsClient(true);
-    }, []);
-
-    // useEffect(() => {
-    //     async function isConnectedUserStreamingToChannelOwner() {
-    //         if (isConnected && address && channel) {
-    //             let channelOwner =
-    //                 channel.lead.verified_addresses.eth_addresses[0];
-
-    //             let { cfaStreams } = await fetchAllOutgoingStreamsFromAnAddress(
-    //                 // "0xaB8a67743325347Aa53bCC66850f8F13df87e3AF".toLowerCase()
-    //                 address.toLowerCase()
-    //             );
-
-    //             cfaStreams = cfaStreams.filter((stream: cfaStream) => {
-    //                 return (
-    //                     stream.receiver &&
-    //                     stream.receiver.id === channelOwner.toLowerCase()
-    //                 );
-    //             });
-
-    //             let cfaStream = cfaStreams.filter((stream: cfaStream) => {
-    //                 return (
-    //                     stream.receiver &&
-    //                     stream.receiver.id === channelOwner.toLowerCase() &&
-    //                     Number(stream.currentFlowRate) > 0
-    //                 );
-    //             })[0];
-
-    //             if (cfaStream) {
-    //                 let amountStreamingToUser =
-    //                     BigInt(
-    //                         parseEther((channel.threshold as string).toString())
-    //                     ) -
-    //                     (BigInt(cfaStream.currentFlowRate) *
-    //                         BigInt(
-    //                             Date.now() - cfaStream.updatedAtTimestamp * 1000
-    //                         )) /
-    //                         BigInt(1000);
-
-    //                 let timeAfterWhichCastingUnlocks = Number(
-    //                     amountStreamingToUser /
-    //                         BigInt(cfaStream.currentFlowRate)
-    //                 );
-
-    //                 setIsConnectedUserStreaming(true);
-    //                 setUnlockTime(formatTime(timeAfterWhichCastingUnlocks));
-    //             } else {
-    //                 setIsConnectedUserStreaming(false);
-    //             }
-
-    //             setChannelOwner(channelOwner);
-    //         }
-    //     }
-
-    //     isConnectedUserStreamingToChannelOwner();
-    // }, [isConnected, user, address, context]);
-
-    if (!context) return null;
-
-    // async function getEthersSigner(
-    //     config: Config,
-    //     { chainId }: { chainId?: number } = {}
-    // ) {
-    //     const client = await getConnectorClient(config, { chainId });
-    //     return clientToSigner(client);
-    // }
-
-    // async function startStream() {
-    //     setLoading(true);
-    //     try {
-    //         if (channelOwner && channel) {
-    //             console.log(channel.threshold);
-    //             const createFlowOperation = await cfaV1.createFlow({
-    //                 superToken: DEGENx,
-    //                 sender: address,
-    //                 receiver: channelOwner,
-    //                 flowRate: (
-    //                     (parseEther(channel.threshold?.toString() as string) *
-    //                         BigInt(4)) /
-    //                     BigInt(24 * 60 * 60)
-    //                 ).toString(),
-    //             });
-
-    //             const txnResponse = await createFlowOperation.exec(
-    //                 await getEthersSigner(config)
-    //             );
-
-    //             const txnReceipt = await txnResponse.wait();
-
-    //             console.log(txnReceipt);
-
-    //             router.refresh();
-    //         }
-    //     } catch (error) {
-    //         console.log(error);
-    //     } finally {
-    //         setLoading(false);
-    //     }
-    // }
-
-    // async function deleteFlow() {
-    //     setLoading(true);
-    //     try {
-    //         if (channelOwner && channel && isConnected && address) {
-    //             let deleteFlowOperation = cfaV1.deleteFlow({
-    //                 sender: address,
-    //                 receiver: channelOwner,
-    //                 superToken: DEGENx,
-    //             });
-
-    //             const txnResponse = await deleteFlowOperation.exec(
-    //                 await getEthersSigner(config)
-    //             );
-
-    //             const txnReceipt = await txnResponse.wait();
-
-    //             console.log(txnReceipt);
-
-    //             router.refresh();
-    //         }
-    //     } catch (error) {
-    //         console.log(error);
-    //     } finally {
-    //         setLoading(false);
-    //     }
-    // }
-
-    const {
-        channel,
-        loading,
-        subscribedUsers,
-        currentFlowRates,
-        streamedUntilUpdatedAts,
-        updatedAtTimestamps,
-    } = context;
-
-    const steps = [
+    const initialSteps = [
         {
             title: "Set Monthly subscription",
             description: (
@@ -327,7 +172,6 @@ export default function ChannelDetailsPage() {
                             if (isThresholdSet) {
                                 return setActiveStep(1);
                             }
-
                             return toast({
                                 status: "error",
                                 description: "Threshold not set",
@@ -341,7 +185,6 @@ export default function ChannelDetailsPage() {
                 </div>
             ),
         },
-
         {
             title: "Add @bot007 as co-host",
             description: (
@@ -371,27 +214,51 @@ export default function ChannelDetailsPage() {
                 </div>
             ),
         },
-        {
-            title: "Let your followers know!",
-            description: (
-                <div className="flex flex-col space-y-2">
-                    <Text>
-                        Let your followers on Warpcast know that you gated the
-                        channel and refresh the page
-                    </Text>
-                    <Link
-                        className="w-full"
-                        target="_blank"
-                        href={`https://warpcast.com/~/compose?text=Hey%20%2F${channel?.id}%20is%20now%20DEGENx%20gated.%0A%0ASubscribe%20to%20cast%20to%20the%20channel%0A%0Ahttps%3A%2F%2Fchannelx.vercel.app%2Fsubscribe%2F${channel?.id}%20`}
-                    >
-                        <Button className="w-full" colorScheme="purple">
-                            Share on Warpcast
-                        </Button>
-                    </Link>
-                </div>
-            ),
-        },
+        // {
+        //     title: "Let your followers know!",
+        //     description: (
+        //         <div className="flex flex-col space-y-2">
+        //             <Text>
+        //                 Let your followers on Warpcast know that you gated the
+        //                 channel and refresh the page
+        //             </Text>
+        //             <Link
+        //                 className="w-full"
+        //                 target="_blank"
+        //                 href={`https://warpcast.com/~/compose?text=Hey%20%2F${channel?.id}%20is%20now%20DEGENx%20gated.%0A%0ASubscribe%20to%20cast%20to%20the%20channel%0A%0Ahttps%3A%2F%2Fchannelx.vercel.app%2Fsubscribe%2F${channel?.id}%20`}
+        //             >
+        //                 <Button className="w-full" colorScheme="purple">
+        //                     Share on Warpcast
+        //                 </Button>
+        //             </Link>
+        //         </div>
+        //     ),
+        // },
     ];
+
+    const [steps, setSteps] = useState(initialSteps);
+
+    const { authenticated, user } = usePrivy();
+
+    const { activeStep, setActiveStep } = useSteps({
+        index: 0,
+        count: 3,
+    });
+
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
+
+    if (!context) return null;
+
+    const {
+        channel,
+        loading,
+        subscribedUsers,
+        currentFlowRates,
+        streamedUntilUpdatedAts,
+        updatedAtTimestamps,
+    } = context;
 
     if (loading) return <LoadingState />;
 
@@ -403,6 +270,126 @@ export default function ChannelDetailsPage() {
         return 0;
     }
     console.log(channel?.threshold);
+
+    function handleSubscriptionType({ target }) {
+        switch (target.value) {
+            case "stream":
+                let steps = [
+                    {
+                        title: "Set Monthly subscription",
+                        description: (
+                            <div className="flex flex-col space-y-2">
+                                <div>
+                                    Use the{" "}
+                                    <IconButton
+                                        aria-label="edit-step"
+                                        icon={<MdOutlineModeEdit />}
+                                        onClick={
+                                            onChannelConfigurationModalOpen
+                                        }
+                                        colorScheme="purple"
+                                        className="mx-2"
+                                    />{" "}
+                                    button to set subscription fee
+                                </div>
+                                <Button
+                                    onClick={async () => {
+                                        let isThresholdSet =
+                                            await checkIfThresholdIsSet(
+                                                channel?.id
+                                            );
+                                        if (isThresholdSet) {
+                                            return setActiveStep(1);
+                                        }
+                                        return toast({
+                                            status: "error",
+                                            description: "Threshold not set",
+                                            isClosable: true,
+                                        });
+                                    }}
+                                    colorScheme="purple"
+                                >
+                                    Verify
+                                </Button>
+                            </div>
+                        ),
+                    },
+                    {
+                        title: "Add @bot007 as co-host",
+                        description: (
+                            <div className="flex flex-col space-y-2">
+                                <Text>
+                                    Add @bot007 as your channel co-host so it
+                                    can hide casts
+                                </Text>
+                                <Button
+                                    onClick={async () => {
+                                        let isBotCoHost =
+                                            await checkIfBotIsCoHost(
+                                                channel?.id
+                                            );
+                                        if (isBotCoHost) {
+                                            return setActiveStep(2);
+                                        }
+
+                                        return toast({
+                                            status: "error",
+                                            description: "Bot is not co-host",
+                                            isClosable: true,
+                                        });
+                                    }}
+                                    colorScheme="purple"
+                                >
+                                    Check @bot007 co-host
+                                </Button>
+                            </div>
+                        ),
+                    },
+                ];
+                setSteps(steps);
+                break;
+            case "nft":
+                let stepsNFT = [
+                    {
+                        title: "Set NFT Address",
+                        description: <NFTGate setActiveStep={setActiveStep} />,
+                    },
+                    {
+                        title: "Add @bot007 as co-host",
+                        description: (
+                            <div className="flex flex-col space-y-2">
+                                <Text>
+                                    Add @bot007 as your channel co-host so it
+                                    can hide casts
+                                </Text>
+                                <Button
+                                    onClick={async () => {
+                                        let isBotCoHost =
+                                            await checkIfBotIsCoHost(
+                                                channel?.id
+                                            );
+                                        if (isBotCoHost) {
+                                            return setActiveStep(2);
+                                        }
+
+                                        return toast({
+                                            status: "error",
+                                            description: "Bot is not co-host",
+                                            isClosable: true,
+                                        });
+                                    }}
+                                    colorScheme="purple"
+                                >
+                                    Check @bot007 co-host
+                                </Button>
+                            </div>
+                        ),
+                    },
+                ];
+                setSteps(stepsNFT);
+                break;
+        }
+    }
 
     if (channel && !channel.threshold) {
         return (
@@ -441,6 +428,13 @@ export default function ChannelDetailsPage() {
                 <Heading className="mb-12" size={"md"}>
                     Setup Channel
                 </Heading>
+                <div>
+                    <Text>Subscription Type</Text>
+                    <Select onChange={handleSubscriptionType}>
+                        <option value="stream">Stream</option>
+                        <option value="nft">NFT</option>
+                    </Select>
+                </div>
                 <div className="flex flex-col">
                     <Stepper
                         orientation="vertical"
