@@ -70,7 +70,7 @@ export function ChannelDataProvider({ children }: { children: ReactNode }) {
                 );
 
                 let threshold = (await kv.get(channelDetails.id)) as string;
-
+                console.log("Threshold", threshold);
                 channelDetails.threshold = threshold;
 
                 let addressesStreamingToChannelOwner =

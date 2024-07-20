@@ -305,7 +305,7 @@ export default function ChannelDetailsPage() {
 
     const steps = [
         {
-            title: "Set DegenX Threshold",
+            title: "Set Monthly subscription",
             description: (
                 <div className="flex flex-col space-y-2">
                     <div>
@@ -317,7 +317,7 @@ export default function ChannelDetailsPage() {
                             colorScheme="purple"
                             className="mx-2"
                         />{" "}
-                        button to set threshold
+                        button to set subscription fee
                     </div>
                     <Button
                         onClick={async () => {
@@ -336,11 +336,12 @@ export default function ChannelDetailsPage() {
                         }}
                         colorScheme="purple"
                     >
-                        Verify Threshold
+                        Verify
                     </Button>
                 </div>
             ),
         },
+
         {
             title: "Add @bot007 as co-host",
             description: (
