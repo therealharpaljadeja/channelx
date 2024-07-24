@@ -9,8 +9,10 @@ const kv = createClient({
     token: process.env.NEXT_PUBLIC_KV_REST_API_TOKEN as string,
 });
 
-export function NFTGate({ setActiveStep }: any) {
-    const [nftAddress, setNFTAddress] = useState<string | undefined>(undefined);
+export function TokenGate({ setActiveStep }: any) {
+    const [tokenAddress, setTokenAddress] = useState<string | undefined>(
+        undefined
+    );
     const context = useContext(ChannelDataContext);
 
     if (!context) return null;
@@ -22,7 +24,7 @@ export function NFTGate({ setActiveStep }: any) {
             "https://api.neynar.com/v2/farcaster/webhook",
             {
                 name: channelId,
-                url: "https://cast-hide-2.vercel.app/api/nft",
+                url: "https://cast-hide-2.vercel.app/api/token",
                 subscription: {
                     "cast.created": { root_parent_urls: [channelUrl] },
                 },
@@ -38,9 +40,9 @@ export function NFTGate({ setActiveStep }: any) {
 
     async function setNFTInKV() {
         if (channel) {
-            await kv.set(`SUBTYPE_${channel.id}`, "NFT");
-            console.log(`NFTAddress: ${nftAddress}`);
-            await kv.set(`${channel.id}`, nftAddress);
+            await kv.set(`SUBTYPE_${channel.id}`, "Token");
+            console.log(`TokenAddress: ${tokenAddress}`);
+            await kv.set(`${channel.id}`, tokenAddress);
             await createChannelWebhook(channel.id, channel.parent_url);
             return setActiveStep(1);
         }
@@ -49,12 +51,12 @@ export function NFTGate({ setActiveStep }: any) {
     return (
         <div className="flex flex-col space-y-2">
             <div>
-                NFT address to gate
+                Token address to gate
                 <Input
-                    value={nftAddress}
+                    value={tokenAddress}
                     onChange={({ target }) => {
                         console.log("Target", target.value);
-                        setNFTAddress(target.value);
+                        setTokenAddress(target.value);
                     }}
                 />
             </div>

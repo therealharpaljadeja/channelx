@@ -43,6 +43,8 @@ import Link from "next/link";
 import { createClient } from "@vercel/kv";
 import axios from "axios";
 import { NFTGate } from "@/components/NFTGate";
+import { TokenGate } from "@/components/TokenGate";
+import { AlfaFrensGate } from "@/components/AlfaFrensGate";
 
 // const cfaV1 = new ConstantFlowAgreementV1(
 //     "0x4C073B3baB6d8826b8C5b229f3cfdC1eC6E47E74",
@@ -388,6 +390,90 @@ export default function ChannelDetailsPage() {
                 ];
                 setSteps(stepsNFT);
                 break;
+            case "token":
+                let stepsToken = [
+                    {
+                        title: "Set Token Address",
+                        description: (
+                            <TokenGate setActiveStep={setActiveStep} />
+                        ),
+                    },
+                    {
+                        title: "Add @bot007 as co-host",
+                        description: (
+                            <div className="flex flex-col space-y-2">
+                                <Text>
+                                    Add @bot007 as your channel co-host so it
+                                    can hide casts
+                                </Text>
+                                <Button
+                                    onClick={async () => {
+                                        let isBotCoHost =
+                                            await checkIfBotIsCoHost(
+                                                channel?.id
+                                            );
+                                        if (isBotCoHost) {
+                                            return setActiveStep(2);
+                                        }
+
+                                        return toast({
+                                            status: "error",
+                                            description: "Bot is not co-host",
+                                            isClosable: true,
+                                        });
+                                    }}
+                                    colorScheme="purple"
+                                >
+                                    Check @bot007 co-host
+                                </Button>
+                            </div>
+                        ),
+                    },
+                ];
+                setSteps(stepsToken);
+                break;
+            case "alfafrens":
+                let stepsAlfaFrens = [
+                    {
+                        title: "Gate Channel by AlfaFrens Subscription",
+                        description: (
+                            <AlfaFrensGate setActiveStep={setActiveStep} />
+                        ),
+                    },
+                    {
+                        title: "Add @bot007 as co-host",
+                        description: (
+                            <div className="flex flex-col space-y-2">
+                                <Text>
+                                    Add @bot007 as your channel co-host so it
+                                    can hide casts
+                                </Text>
+                                <Button
+                                    onClick={async () => {
+                                        let isBotCoHost =
+                                            await checkIfBotIsCoHost(
+                                                channel?.id
+                                            );
+                                        if (isBotCoHost) {
+                                            return setActiveStep(2);
+                                        }
+
+                                        return toast({
+                                            status: "error",
+                                            description: "Bot is not co-host",
+                                            isClosable: true,
+                                        });
+                                    }}
+                                    colorScheme="purple"
+                                >
+                                    Check @bot007 co-host
+                                </Button>
+                            </div>
+                        ),
+                    },
+                ];
+                setSteps(stepsAlfaFrens);
+                break;
         }
     }
 
@@ -433,6 +519,8 @@ export default function ChannelDetailsPage() {
                     <Select onChange={handleSubscriptionType}>
                         <option value="stream">Stream</option>
                         <option value="nft">NFT</option>
+                        <option value="token">Token</option>
+                        <option value="alfafrens">AlfaFrens</option>
                     </Select>
                 </div>
                 <div className="flex flex-col">
