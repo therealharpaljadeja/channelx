@@ -8,8 +8,8 @@ const kv = createClient({
     token: process.env.NEXT_PUBLIC_KV_REST_API_TOKEN as string,
 });
 
-export function NFTGate({ setActiveStep }) {
-    const [nftAddress, setNFTAddress] = useState<string | null>(null);
+export function NFTGate({ setActiveStep }: any) {
+    const [nftAddress, setNFTAddress] = useState<string | undefined>(undefined);
     const context = useContext(ChannelDataContext);
 
     if (!context) return null;

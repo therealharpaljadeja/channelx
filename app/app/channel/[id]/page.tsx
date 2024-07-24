@@ -271,7 +271,7 @@ export default function ChannelDetailsPage() {
     }
     console.log(channel?.threshold);
 
-    function handleSubscriptionType({ target }) {
+    function handleSubscriptionType({ target }: any) {
         switch (target.value) {
             case "stream":
                 let steps = [
