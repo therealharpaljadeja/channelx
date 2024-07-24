@@ -263,8 +263,8 @@ export default function ChannelDetailsPage() {
     if (loading) return <LoadingState />;
 
     function isFidChannelHost(fid?: number | null) {
-        if (channel && channel.hosts && fid) {
-            return channel.hosts.filter((host) => host.fid === fid).length > 0;
+        if (channel && channel.lead && fid) {
+            return channel.lead.fid === fid;
         }
 
         return 0;
