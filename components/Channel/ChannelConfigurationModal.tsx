@@ -75,6 +75,7 @@ export default function ChannelConfigurationModal({
                 }
 
                 await kv.set(channel.id, threshold);
+                await kv.set(`SUBTYPE_${channel.id}`, "STREAM");
 
                 // toast({
                 //     title: "Threshold set.",

@@ -122,8 +122,8 @@ async function checkIfBotIsCoHost(fid?: string) {
 
             if (channel) {
                 return (
-                    channel.lead.id === 510701 ||
-                    channel.moderator.id === 510701
+                    channel.lead.fid === 510701 ||
+                    channel.moderator.fid === 510701
                 );
             }
 
@@ -167,17 +167,18 @@ export default function ChannelDetailsPage() {
                     </div>
                     <Button
                         onClick={async () => {
-                            let isThresholdSet = await checkIfThresholdIsSet(
-                                channel?.id
-                            );
-                            if (isThresholdSet) {
-                                return setActiveStep(1);
+                            if (channel) {
+                                let isThresholdSet =
+                                    await checkIfThresholdIsSet(channel?.id);
+                                if (isThresholdSet) {
+                                    return setActiveStep(1);
+                                }
+                                return toast({
+                                    status: "error",
+                                    description: "Threshold not set",
+                                    isClosable: true,
+                                });
                             }
-                            return toast({
-                                status: "error",
-                                description: "Threshold not set",
-                                isClosable: true,
-                            });
                         }}
                         colorScheme="purple"
                     >
