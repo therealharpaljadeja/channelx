@@ -122,9 +122,8 @@ async function checkIfBotIsCoHost(fid?: string) {
 
             if (channel) {
                 return (
-                    channel.hosts.filter(
-                        (host: { fid: number }) => host.fid == 510701
-                    ).length > 0
+                    channel.lead.id === 510701 ||
+                    channel.moderator.id === 510701
                 );
             }
 
